@@ -1,0 +1,14 @@
+
+
+.board_title_width{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+}
+
+
+.margin-top-card{
+    margin-top: -9px;
+}

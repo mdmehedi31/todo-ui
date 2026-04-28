@@ -1,0 +1,22 @@
+
+
+@import url("./views/card.css");
+@import url("./views/sign-up.css");
+
+
+
+:root {
+    --lumo-primary-color: linear-gradient(135deg, #667eea, #764ba2);
+    --lumo-primary-color-50pct: #4f46e580;
+    --lumo-primary-color-10pct: #4f46e51a;
+
+    --lumo-error-color: #dc2626;
+    --lumo-error-color-50pct: #dc262680;
+    --lumo-error-color-10pct: #dc26261a;
+}
+
+
+.cancel-btn {
+    background-color: var(--lumo-error-color);
+    color: white;
+}
