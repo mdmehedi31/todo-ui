@@ -1,0 +1,74 @@
+/* 1. Global View Styling */
+.generative-prompt-view {
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f3f5 100%);
+    font-family: var(--lumo-font-family, -apple-system, BlinkMacSystemFont, sans-serif);
+}
+
+/* 2. The Interactive Prompt */
+.modern-pill-prompt {
+    --vaadin-input-field-border-radius: 28px;
+    --vaadin-input-field-background-color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    padding: 2px; /* Adds a bit of internal "breathing room" */
+}
+
+.modern-pill-prompt:focus-within {
+    /* Multi-layered shadow for extra depth */
+    box-shadow: 0 0 0 3px rgba(24, 114, 245, 0.2), 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* 3. The ToDo Card (The "Eye-Catchy" part) */
+.vibrant-todo-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #edf2f7;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    margin-bottom: 8px; /* Fixed the spacing issue */
+
+    /* Advanced Elastic Animation */
+    animation: slideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.vibrant-todo-card:hover {
+    border-color: #1872f5;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+}
+
+.todo-card-text {
+    font-weight: 500;
+    color: #2d3748;
+    font-size: 0.95rem;
+}
+
+/* Delete Button Fade-In */
+.todo-delete-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.vibrant-todo-card:hover .todo-delete-btn {
+    opacity: 1;
+}
+
+/* 4. New Elastic Animation Keyframes */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 5. Custom Scroller */
+.smooth-scroller::-webkit-scrollbar {
+    width: 4px;
+}
+.smooth-scroller::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
