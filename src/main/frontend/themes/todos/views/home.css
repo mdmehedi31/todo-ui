@@ -1,0 +1,337 @@
+.login-root {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 20% 50%, #0a0e2a 0%, #050818 60%, #000308 100%);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Starfield */
+.stars-layer {
+    position: absolute;
+    inset: 0;
+    background-image:
+            radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.9) 0%, transparent 100%),
+            radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.7) 0%, transparent 100%),
+            radial-gradient(1.5px 1.5px at 40% 10%, rgba(255,255,255,0.8) 0%, transparent 100%),
+            radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+            radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.9) 0%, transparent 100%),
+            radial-gradient(1.5px 1.5px at 80% 70%, rgba(255,255,255,0.7) 0%, transparent 100%),
+            radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,0.8) 0%, transparent 100%),
+            radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+            radial-gradient(1px 1px at 35% 85%, rgba(255,255,255,0.7) 0%, transparent 100%),
+            radial-gradient(1.5px 1.5px at 60% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
+            radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.8) 0%, transparent 100%),
+            radial-gradient(1px 1px at 95% 80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+            radial-gradient(1px 1px at 48% 30%, rgba(200,220,255,0.7) 0%, transparent 100%),
+            radial-gradient(1px 1px at 72% 55%, rgba(200,220,255,0.5) 0%, transparent 100%),
+            radial-gradient(2px 2px at 85% 40%, rgba(150,200,255,0.4) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Nebula glow blobs */
+.nebula {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(80px);
+    z-index: 0;
+    animation: nebulaFloat 8s ease-in-out infinite alternate;
+}
+.nebula-1 {
+    width: 500px; height: 400px;
+    top: -100px; right: 10%;
+    background: radial-gradient(circle, rgba(0,200,150,0.18) 0%, transparent 70%);
+    animation-delay: 0s;
+}
+.nebula-2 {
+    width: 350px; height: 300px;
+    top: 50%; left: 30%;
+    background: radial-gradient(circle, rgba(80,0,200,0.12) 0%, transparent 70%);
+    animation-delay: -3s;
+}
+.nebula-3 {
+    width: 300px; height: 250px;
+    bottom: -80px; left: 5%;
+    background: radial-gradient(circle, rgba(0,100,255,0.10) 0%, transparent 70%);
+    animation-delay: -5s;
+}
+@keyframes nebulaFloat {
+    from { transform: translateY(0px) scale(1); }
+    to   { transform: translateY(-30px) scale(1.08); }
+}
+
+/* ===== LAYOUT ===== */
+.main-layout {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6% 0 8%;
+    box-sizing: border-box;
+}
+.main-layout > * { flex-shrink: 0; }
+
+/* ===== LEFT PANEL ===== */
+.left-panel {
+    flex: 1;
+    max-width: 520px;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center;
+    gap: 0 !important;
+    padding: 0 !important;
+}
+
+.brand-title {
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    letter-spacing: -1px;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(100,180,255,0.3);
+}
+
+.brand-tagline {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #3ab8ff;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 0 0 20px 0;
+}
+
+.brand-description {
+    font-size: 0.95rem;
+    color: rgba(180,200,230,0.75);
+    margin: 0 0 40px 0;
+    line-height: 1.6;
+    max-width: 380px;
+}
+
+/* ===== FEATURES ===== */
+.features-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    padding: 0 !important;
+}
+
+.feature-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 0 !important;
+}
+
+.feature-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(58, 184, 255, 0.15);
+    border: 1px solid rgba(58, 184, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feature-icon {
+    color: #3ab8ff !important;
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.feature-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    padding: 0 !important;
+}
+
+.feature-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.feature-subtitle {
+    font-size: 0.82rem;
+    color: rgba(160,185,220,0.7);
+}
+
+/* ===== SIGN-IN CARD ===== */
+.signin-card {
+    width: 380px;
+    background: rgba(12, 18, 48, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(80, 120, 220, 0.45);
+    border-radius: 20px;
+    padding: 44px 38px 40px;
+    box-shadow:
+            0 0 0 1px rgba(100,140,255,0.08),
+            0 0 60px rgba(60,100,255,0.15),
+            0 30px 80px rgba(0,0,0,0.5),
+            inset 0 1px 0 rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    box-sizing: border-box;
+    animation: cardAppear 0.6s ease-out both;
+}
+@keyframes cardAppear {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #e8eeff;
+    text-align: center;
+    margin: 0 0 32px 0;
+    letter-spacing: 0.02em;
+}
+
+/* ===== FORM FIELDS ===== */
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.field-label {
+    font-size: 0.82rem;
+    color: rgba(180,200,240,0.8);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+
+/* Override Vaadin text-field styles */
+.custom-text-field,
+.custom-password-field {
+    --vaadin-input-field-background: rgba(255,255,255,0.08) !important;
+    --vaadin-input-field-border-color: rgba(90,130,220,0.5) !important;
+    --vaadin-input-field-focused-border-color: rgba(100,180,255,0.8) !important;
+    --vaadin-input-field-border-radius: 8px !important;
+    --vaadin-input-field-value-color: #e8eeff !important;
+    --vaadin-input-field-placeholder-color: rgba(160,185,220,0.5) !important;
+    width: 100% !important;
+}
+
+.custom-text-field::part(input-field),
+.custom-password-field::part(input-field) {
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid rgba(90,130,220,0.5) !important;
+    border-radius: 8px !important;
+    color: #e8eeff !important;
+    font-size: 0.9rem !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-text-field::part(input-field):focus-within,
+.custom-password-field::part(input-field):focus-within {
+    border-color: rgba(100,180,255,0.9) !important;
+    box-shadow: 0 0 0 3px rgba(60,140,255,0.2) !important;
+}
+
+.custom-text-field input,
+.custom-password-field input {
+    color: #e8eeff !important;
+    background: transparent !important;
+}
+
+/* ===== LOGIN BUTTON ===== */
+.login-btn {
+    width: 100% !important;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    height: 48px !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    color: #ffffff !important;
+    background: linear-gradient(90deg, #2979ff 0%, #aa00ff 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    box-shadow:
+            0 4px 20px rgba(100,80,255,0.45),
+            0 0 0 1px rgba(255,255,255,0.06) !important;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s !important;
+}
+.login-btn:hover {
+    filter: brightness(1.12) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 28px rgba(100,80,255,0.55) !important;
+}
+.login-btn:active {
+    transform: translateY(0) !important;
+}
+
+/* Override Vaadin button internal parts */
+.login-btn::part(label) {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* ===== LINKS ===== */
+.forgot-wrapper {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.forgot-link {
+    font-size: 0.85rem;
+    color: rgba(180,200,240,0.65) !important;
+    text-decoration: none !important;
+    transition: color 0.2s;
+}
+.forgot-link:hover {
+    color: rgba(100,180,255,0.9) !important;
+}
+
+.register-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 0 !important;
+}
+
+.new-here-text {
+    font-size: 0.85rem;
+    color: rgba(160,185,220,0.6);
+}
+
+.create-link {
+    font-size: 0.85rem;
+    color: #3ab8ff !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+.create-link:hover {
+    color: #7ed6ff !important;
+    text-decoration: underline !important;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .left-panel { display: none !important; }
+    .main-layout {
+        justify-content: center;
+        padding: 0 20px;
+    }
+    .signin-card { width: 100%; max-width: 380px; }
+}

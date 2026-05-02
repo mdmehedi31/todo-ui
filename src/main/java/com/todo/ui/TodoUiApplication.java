@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationListener;
 @Push
 @SpringBootApplication
 @Theme(value = "todos")
+
 public class TodoUiApplication implements AppShellConfigurator {
 
 	public static void main(String[] args) {
