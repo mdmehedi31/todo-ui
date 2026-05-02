@@ -22,5 +22,5 @@ public interface ITodoService {
     public List<UserCalendarDto> getAllUserCalendarsByUserId(Integer userId);
     public ApiResponse setupEventSchedule(Integer boardId, Integer boardItemId, Integer userId, GoogleCalendarEventCreateDto calendarEventCreateDto);
     public List<CalendarEventDTO> getAllCalendarEventsByUserId(Integer userId, Instant startDate, Instant endDate);
-
+    public ApiResponse addAiGenTodoList(TodoDTO todoDTO, Integer createdBy);
 }

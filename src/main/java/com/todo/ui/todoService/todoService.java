@@ -131,4 +131,9 @@ public class todoService implements ITodoService{
         }
         return this.todoEndpoint.getAllUserCalendarEvents(forms);
     }
+
+    @Override
+    public ApiResponse addAiGenTodoList(TodoDTO todoDTO, Integer createdBy) {
+        return this.todoEndpoint.addAiGenTodoList(todoDTO, createdBy);
+    }
 }

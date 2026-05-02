@@ -112,5 +112,10 @@ public class TodoEndpoint {
         return eventDTOList;
     }
 
+    public ApiResponse addAiGenTodoList(TodoDTO todoDTO, Integer createdById) {
+        ApiResponse response = this.restEndPointCaller.postCallerWithRequestBodyAndPathvariable(TodoEndpointPath.AI_GEN_TODO_LIST, todoDTO, ApiResponse.class, createdById);
+        return response;
+    }
+
 
 }

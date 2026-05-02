@@ -8,6 +8,7 @@ public class TodoEndpointPath {
     public static final String GET_TODO_LIST = ROOT_PATH + "get/{userId}";
     public static final String UPDATE_TODO = ROOT_PATH + "update";
     public static final String DELETE_TODO = ROOT_PATH + "delete/{todoId}";
+    public static final String AI_GEN_TODO_LIST = ROOT_PATH + "/add-ai-generated-todo/{createdById}";
     // Todo list endpoint path
     public static final String CREATE_TODO_LIST_ITEM = ROOT_PATH + "create-todolist";
     public static final String GET_TODO_LIST_ITEM = ROOT_PATH + "get-todolist/{todoId}";

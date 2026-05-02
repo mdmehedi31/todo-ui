@@ -1,18 +1,33 @@
 package com.todo.ui.view;
 
 import com.todo.ui.todoService.IAiGenerateTodoService;
+import com.todo.ui.todoService.ITodoService;
+import com.todom.library.dto.ApiResponse;
+import com.todom.library.dto.TodoDTO;
+import com.todom.library.dto.TodoListDTO;
+import com.todom.library.enums.SuccessOrFailedEnum;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Route("todo-generator")
 public class TodoGeneratorView extends VerticalLayout {
@@ -20,94 +35,185 @@ public class TodoGeneratorView extends VerticalLayout {
     private final VerticalLayout todoContainer;
     private final TextField promptField;
     private final Scroller scroller;
-    private IAiGenerateTodoService aiGenerateTodoService;
+    private final ProgressBar loadingBar;
+    private final IAiGenerateTodoService iAiGenerateTodoService;
+    private final ITodoService iTodoService;
+    private static final Logger log = LoggerFactory.getLogger(TodoGeneratorView.class);
 
-    public TodoGeneratorView(IAiGenerateTodoService aiGenerateTodoService) {
+    public TodoGeneratorView(IAiGenerateTodoService iAiGenerateTodoService,ITodoService iTodoService) {
+        this.iAiGenerateTodoService = iAiGenerateTodoService;
+        this.iTodoService = iTodoService;
 
-        this.aiGenerateTodoService = aiGenerateTodoService;
         setSizeFull();
         setPadding(false);
         setSpacing(false);
         setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
         addClassName("generative-prompt-view");
 
-        // --- Main UI Wrapper ---
         VerticalLayout mainWrapper = new VerticalLayout();
-        mainWrapper.setWidth("500px");
-        mainWrapper.setMaxWidth("90vw"); // Responsive width
-        mainWrapper.setPadding(false);
-        mainWrapper.setSpacing(false);
-        mainWrapper.getStyle().set("margin-top", "-5vh");
+        mainWrapper.setWidth("70%");
+       // mainWrapper.setMaxWidth("95vw");
+        mainWrapper.setHeight("90%");
+        mainWrapper.setPadding(true);
 
-        // 1. The Scroller and Container
         todoContainer = new VerticalLayout();
         todoContainer.setPadding(false);
         todoContainer.setSpacing(true);
-        // Ensure items "stack" from the bottom up to meet the prompt
-        todoContainer.setJustifyContentMode(JustifyContentMode.END);
 
         scroller = new Scroller(todoContainer);
-        scroller.setHeight("350px");
         scroller.setWidthFull();
-        scroller.getStyle().set("margin-bottom", "10px"); // Space between list and input
+        scroller.getStyle().set("flex-grow", "1"); // Fill available space
         scroller.addClassName("smooth-scroller");
 
-        // 2. The Input Prompt
+        loadingBar = new ProgressBar();
+        loadingBar.setIndeterminate(true);
+        loadingBar.setValue(0);
+        loadingBar.addClassNames("loading-spinner", "hidden");
+
         promptField = new TextField();
-        promptField.setPlaceholder("What topic can I generate tasks for?");
+        promptField.setPlaceholder("Message TodoAI...");
         promptField.setWidthFull();
-        promptField.setClearButtonVisible(true);
-
-        // Changed MAGICPLANE to MAGIC or SPARK_LINE for compatibility
-        Icon prefixIcon = VaadinIcon.MAGIC.create();
-        prefixIcon.getStyle().set("color", "var(--lumo-primary-color)");
-        promptField.setPrefixComponent(prefixIcon);
-
+        promptField.setPrefixComponent(VaadinIcon.MAGIC.create());
         promptField.addClassName("modern-pill-prompt");
 
-        promptField.addKeyDownListener(Key.ENTER, event -> {
-            String value = promptField.getValue();
-            if (value != null && !value.isBlank()) {
-                addModernTodoItem(value);
+       /* promptField.addKeyDownListener(Key.ENTER, event -> {
+            String val = promptField.getValue();
+            if (val != null && !val.isBlank()) {
+                addUserChatBubble(val);
+              //  processAiGeneration(val);
                 promptField.clear();
             }
+        });*/
+
+        mainWrapper.add(scroller, loadingBar, promptField);
+        add(mainWrapper);
+        setupPromptLogic();
+    }
+
+    private void addUserChatBubble(String text) {
+        Span bubble = new Span(text);
+        bubble.addClassName("chat-bubble-user");
+        HorizontalLayout wrapper = new HorizontalLayout(bubble);
+        wrapper.setWidthFull();
+        wrapper.setJustifyContentMode(JustifyContentMode.END);
+        todoContainer.add(wrapper);
+    }
+
+    private void setupPromptLogic() {
+        promptField.addKeyDownListener(Key.ENTER, event -> {
+            String val = promptField.getValue();
+            if (val != null && !val.isBlank()) {
+
+                addUserChatBubble(val);
+                loadingBar.removeClassName("hidden");
+                promptField.setEnabled(false);
+                promptField.clear();
+                scrollToBottom();
+
+                UI ui = UI.getCurrent();
+                CompletableFuture.supplyAsync(() -> {
+                    return iAiGenerateTodoService.generateAiTodo(val);
+                }).thenAccept(todo -> {
+                    ui.access(() -> {
+                        loadingBar.addClassName("hidden");
+                        promptField.setEnabled(true);
+                        if (todo != null) {
+                            renderAiResponse(todo);
+                        } else {
+                            todoContainer.add(new Span("Service unavailable."));
+                        }
+                        scrollToBottom();
+                    });
+                }).exceptionally(ex -> {
+                    ui.access(() -> {
+                        loadingBar.addClassName("hidden");
+                        promptField.setEnabled(true);
+                    });
+                    return null;
+                });
+            }
+        });
+    }
+
+
+    private void addTodoToList(TodoDTO todoDTO){
+
+
+        ApiResponse response = this.iTodoService.addAiGenTodoList(todoDTO, 1);
+
+        if(response !=null && response.getMessage() != null && response.getMessage().equals(SuccessOrFailedEnum.SUCCESS)){
+            Notification.show("TODO save successfully");
+        }
+        else{
+            Notification.show("Save failed");
+        }
+    }
+
+    private void renderAiResponse(TodoDTO todoDTO) {
+        VerticalLayout responseWrapper = new VerticalLayout();
+
+        Button btnCreateTodo = new Button("Add to TODO list");
+        btnCreateTodo.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_WARNING);
+        responseWrapper.add(btnCreateTodo);
+
+        btnCreateTodo.addClickListener(event -> {
+           log.info("When trying to add todo in my list");
+            addTodoToList(todoDTO);
         });
 
-        mainWrapper.add(scroller, promptField);
-        add(mainWrapper);
+        responseWrapper.addClassName("chat-bubble-ai");
+        responseWrapper.setPadding(true);
+        responseWrapper.setSpacing(false);
+
+        if (todoDTO.getTitle() != null) {
+            H2 title = new H2(todoDTO.getTitle());
+            title.getStyle().set("margin-top", "0");
+            responseWrapper.add(title);
+        }
+
+      /*  if (todoDTO.getSubTitle() != null) {
+            Span sub = new Span(todoDTO.getSubTitle());
+            sub.addClassName("subtitle-text");
+            responseWrapper.add(sub);
+        }*/
+
+        if (todoDTO.getTodoList() != null) {
+            /*for (String list : todoDTO.getTodoList()) {
+                addCategoryToResponse(responseWrapper, list.getTitle(), list.getTodoList());
+            }*/
+            addCategoryToResponse(responseWrapper,null /*list.getTitle()*/, todoDTO.getTodoList());
+        }
+
+        todoContainer.add(responseWrapper);
     }
 
-    private void addModernTodoItem(String topic) {
-        HorizontalLayout card = new HorizontalLayout();
-        card.setWidthFull();
-        card.setPadding(true);
-        card.setSpacing(true);
-        card.setAlignItems(Alignment.CENTER);
-        card.addClassName("vibrant-todo-card");
+    private void addCategoryToResponse(VerticalLayout parent, String catTitle, List<String> subTasks) {
+        VerticalLayout catWrapper = new VerticalLayout();
+        catWrapper.addClassName("category-card");
+        catWrapper.setPadding(false);
 
-        // Checkbox first for better "ToDo" feel
-        Checkbox done = new Checkbox();
+        if (catTitle != null) {
+            Span title = new Span(catTitle);
+            title.addClassName("category-title");
+            catWrapper.add(title);
+        }
 
-        Span taskText = new Span(topic);
-        taskText.addClassName("todo-card-text");
-
-        Button deleteBtn = new Button(VaadinIcon.TRASH.create());
-        deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-        deleteBtn.addClassName("todo-delete-btn");
-        deleteBtn.addClickListener(e -> todoContainer.remove(card));
-
-        card.add(done, taskText, deleteBtn);
-        card.expand(taskText);
-
-        // Add as first to make it pop up right above the input
-        todoContainer.addComponentAsFirst(card);
-
-        // Auto-scroll to ensure the new item is visible
-        scrollToTop();
+        for (String task : subTasks) {
+            HorizontalLayout row = new HorizontalLayout();
+            row.addClassName("task-row");
+            Checkbox cb = new Checkbox();
+            Span ts = new Span(task);
+            cb.addValueChangeListener(e -> {
+                ts.getStyle().set("text-decoration", e.getValue() ? "line-through" : "none");
+                ts.getStyle().set("opacity", e.getValue() ? "0.5" : "1.0");
+            });
+            row.add(cb, ts);
+            catWrapper.add(row);
+        }
+        parent.add(catWrapper);
     }
 
-    private void scrollToTop() {
-        scroller.getElement().executeJs("this.scrollTop = 0;");
+    private void scrollToBottom() {
+        scroller.getElement().executeJs("this.scrollTop = this.scrollHeight;");
     }
 }
