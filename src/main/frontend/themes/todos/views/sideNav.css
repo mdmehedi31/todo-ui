@@ -1,11 +1,11 @@
-/* The Side Drawer Panel */
+
 .side-drawer {
     position: fixed;
     top: 0;
-    right: -450px; /* Hidden off-screen */
+    right: -450px;
     width: 400px;
     height: 100vh;
-    background: rgba(15, 23, 42, 0.85); /* Matches your Cyber theme */
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(20px);
     border-left: 1px solid rgba(255, 255, 255, 0.1);
     transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -14,10 +14,9 @@
 }
 
 .side-drawer.open {
-    right: 0; /* Slide in */
+    right: 0;
 }
 
-/* Background Dimmer */
 .drawer-overlay {
     position: fixed;
     top: 0;
@@ -41,7 +40,6 @@
     color: #e2e8f0;
 }
 
-/* Header Styling */
 .details-header {
     background: rgba(30, 41, 59, 0.5);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -64,13 +62,11 @@
     color: #94a3b8;
 }
 
-/* List Styling */
 .details-list-container {
     overflow-y: auto;
     flex-grow: 1;
 }
 
-/* Adjusting the rows (assuming TodoListItemRow uses HorizontalLayout) */
 .details-list-container > vaadin-horizontal-layout {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 8px;
@@ -93,7 +89,6 @@
     margin-top: 40px;
 }
 
-/* Styling the Resizable Splitter */
 vaadin-split-layout::part(splitter) {
     min-width: 4px;
     background: rgba(59, 130, 246, 0.2);
@@ -105,7 +100,6 @@ vaadin-split-layout::part(splitter):hover {
     cursor: col-resize;
 }
 
-/* Glassmorphism for the Pane */
 .glass-details-pane {
     background: rgba(15, 23, 42, 0.8) !important;
     backdrop-filter: blur(25px);
@@ -133,7 +127,6 @@ vaadin-split-layout::part(splitter):hover {
     padding: 1rem;
 }
 
-/* Make Row items look like modern list items */
 .details-scroll-area > vaadin-horizontal-layout {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;

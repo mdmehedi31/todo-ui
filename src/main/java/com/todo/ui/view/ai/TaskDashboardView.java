@@ -213,10 +213,6 @@ public class TaskDashboardView extends Div {
 
         splitLayout.addToSecondary(taskDetailsView);
         splitLayout.setSplitterPosition(70);
-        /*
-        drawer.add(taskDetailsView);
-        drawer.addClassName("open");
-        overlay.addClassName("visible");*/
     }
 
     private void openAddChecklistDialog(Integer todoBoardId) {
@@ -254,7 +250,6 @@ public class TaskDashboardView extends Div {
     private void openEditDialog(TodoResponseDTO todoResponse, Consumer<TodoResponseDTO> updateConsumer){
         Dialog dialog = new Dialog();
         Consumer<Boolean> dialogCloseConsumer = (e) -> {
-            //log.info("Dialog closed consumer");
             dialog.close();
         };
         dialog.addThemeVariants(DialogVariant.LUMO_NO_PADDING);
@@ -263,7 +258,5 @@ public class TaskDashboardView extends Div {
         AddTodoPopup addTodoPopup = new AddTodoPopup(todoService, dialogCloseConsumer,todoResponse,updateConsumer);
         dialog.add(addTodoPopup);
         dialog.open();
-
-
     }
 }

@@ -73,12 +73,10 @@ public class TodoDetailsView extends VerticalLayout {
         metaActions.add(countBadge, btnAdd);
         header.add(title, metaActions);
 
-        // 2. List Section (Scrollable)
         listContainer.addClassName("details-scroll-area");
         listContainer.setWidthFull();
         listContainer.setPadding(true);
 
-        // Backend Call
         List<TodoListResponseDTO> items = this.todoService.getAllTodoListByTodoId(todoResponseDTO.getId());
 
         log.info("Task list size: " + items.size());

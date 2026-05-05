@@ -23,13 +23,12 @@ public class TaskCard extends VerticalLayout {
         setPadding(true);
         setWidth("300px");
         setHeight("240px");
-        // Title Section
+
        taskTitle = new H3(title);
         Tooltip.forComponent(taskTitle)
                 .setText(title);
         taskTitle.addClassName("task-title");
 
-        // Date Badge Row
         HorizontalLayout dates = new HorizontalLayout();
         dates.addClassName("date-row");
         dates.setWidthFull();
@@ -43,7 +42,6 @@ public class TaskCard extends VerticalLayout {
         dates.add(start, end);
         dates.setJustifyContentMode(JustifyContentMode.BETWEEN);
 
-        // Progress Section
         Span progressLabel = new Span(todoCount + " Todos • " + progress + "% Done");
         progressLabel.addClassName("progress-label");
 
@@ -51,7 +49,6 @@ public class TaskCard extends VerticalLayout {
         bar.setValue(progress / 100.0);
         bar.addClassName("custom-progress-bar");
 
-        // Action Buttons
         HorizontalLayout actions = new HorizontalLayout();
         actions.addClassName("action-row");
 

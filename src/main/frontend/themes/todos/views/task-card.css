@@ -1,4 +1,4 @@
-/* The Card itself: Glassmorphism */
+
 .task-card {
     background: rgba(30, 41, 59, 0.4);
     backdrop-filter: blur(12px);
@@ -14,7 +14,6 @@
     background: rgba(30, 41, 59, 0.6);
 }
 
-/* Typography */
 .task-title {
     color: #f8fafc;
     font-size: 1.15rem;
@@ -26,7 +25,6 @@
     -webkit-box-orient: vertical;
 }
 
-/* Date Badges */
 .date-badge {
     font-size: 0.75rem;
     font-weight: 600;
@@ -44,7 +42,6 @@
     color: #4ade80;
 }
 
-/* Progress Bar */
 .progress-label {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.8rem;
@@ -57,7 +54,6 @@
     border-radius: 4px;
 }
 
-/* Action Buttons */
 .action-row {
     width: 100%;
     justify-content: flex-end;
