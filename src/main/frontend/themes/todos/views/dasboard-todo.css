@@ -1,0 +1,116 @@
+/* Dashboard Root & Background */
+.dashboard-root {
+    background: #020617;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.nebula-main {
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+    top: -20%;
+    right: -10%;
+    position: fixed;
+}
+
+/* Header Styling */
+.dashboard-header {
+    padding: 1.5rem 2rem;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 2rem;
+}
+
+.dashboard-logo {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    padding: 10px 20px 20px 20px;
+    gap: 16px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    justify-content: start;
+}
+
+
+/* Premium Buttons */
+.primary-action-btn {
+    background: linear-gradient(90deg, #3b82f6, #a855f7) !important;
+    color: white !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+}
+
+.secondary-action-btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+}
+
+
+.task-card {
+    background: rgba(30, 41, 59, 0.45);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.25rem !important;
+
+    /* Removed fixed width so 1fr can work its magic */
+    width: 100%;
+    height: 220px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.task-card:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px);
+}
+
+.task-title {
+    color: #f8fafc;
+    font-size: 1.1rem;
+    font-weight: 600;
+
+    /* Keep truncation active */
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.date-badge {
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.start-date { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.end-date { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+
+/* Progress Bar Customization */
+.custom-progress-bar {
+    height: 8px !important;
+    margin-top: 10px;
+}
+
+.custom-progress-bar [part="value"] {
+    background: linear-gradient(90deg, #3b82f6, #a855f7);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
