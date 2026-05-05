@@ -9,6 +9,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.dialog.DialogVariant;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -32,12 +35,13 @@ public class Todo extends VerticalLayout {
     private ITodoService  todoService;
     private  TodoCardParentView cardParentView;
     private GoogleCalendareService googleCalendareService;
-    private Button connectGoogleCalender= new Button("Connect Google Calender");
-    private Button btnAddTodo = new Button("Add Todo");
+    private Button connectGoogleCalender= new Button("Connect Google Calender", VaadinIcon.GOOGLE_PLUS.create());
+    private Button btnAddTodo = new Button("Add Todo", VaadinIcon.PLUS.create());
     private Integer userId=1;
     public Todo(ITodoService  todoService,GoogleCalendareService googleCalendareService){
         this.todoService = todoService;
         this.googleCalendareService = googleCalendareService;
+        addClassName("dashboard-root");
         initComp();
         buildCard();
 
@@ -65,16 +69,27 @@ public class Todo extends VerticalLayout {
     private void initComp() {
         this.setSpacing(false);
 
-        connectGoogleCalender.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        connectGoogleCalender.addClassName("secondary-action-btn");
+      //  connectGoogleCalender.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         connectGoogleCalender.addClickListener(e->{
             openGoogleCalenderConnectDialog();
             log.info("Open google calender");
         });
-        btnAddTodo.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_WARNING);
+        btnAddTodo.addClassName("primary-action-btn");
+       // btnAddTodo.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_WARNING)
         HorizontalLayout btnHorizontalLayout = new HorizontalLayout();
         btnHorizontalLayout.add(btnAddTodo, connectGoogleCalender);
 
-        this.add(btnHorizontalLayout);
+
+        H2 logo = new H2("TaskHub");
+        logo.addClassName("dashboard-logo");
+        HorizontalLayout header = new HorizontalLayout();
+        header.addClassName("dashboard-header");
+        header.setWidthFull();
+        header.add(logo, btnHorizontalLayout);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN.BETWEEN);
+
+        this.add(header);
         btnAddTodo.addClickListener(e -> {
             log.info("When click add todo button");
             openDialog();

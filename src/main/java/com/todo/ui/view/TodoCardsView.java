@@ -17,16 +17,14 @@ import com.vaadin.flow.component.card.CardVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.dialog.DialogVariant;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Hr;
-import com.vaadin.flow.component.html.NativeLabel;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.slf4j.Logger;
@@ -49,8 +47,11 @@ public class TodoCardsView extends FlexLayout {
         this.todoService = todoService;
         this.userId = userId;
         this.todoResponseDTOConsumer = todoResponseDTOConsumer;
-        this.setFlexWrap(FlexWrap.WRAP);
-        this.getStyle().set("gap", "1rem");
+      /*  this.setFlexWrap(FlexWrap.WRAP);
+        this.getStyle().set("gap", "1rem");*/
+        addClassName("task-card");
+        setWidth("300px");
+        setHeight("240px");
         loadTodoList();
 
 
@@ -100,8 +101,11 @@ public class TodoCardsView extends FlexLayout {
         Hr separator = new Hr();
         separator.getStyle().set("margin-left", "-4px");
         separator.getStyle().set("margin-right", "-5px");
-        NativeLabel lblTitle = new NativeLabel(todoResponse.getTitle());
-        lblTitle.addClassName("board_title_width");
+        H3 taskTitle = new H3(todoResponse.getTitle());
+        Tooltip.forComponent(taskTitle)
+                .setText(todoResponse.getTitle());
+        taskTitle.addClassName("task-title");
+
         String todoType="";
         if(todoResponse.getTodoType() !=null){
             todoType=todoResponse.getTodoType().name();
@@ -110,9 +114,13 @@ public class TodoCardsView extends FlexLayout {
         }
         NativeLabel lblTodoType = new NativeLabel(todoType);
 
+        Span progressLabel = new Span(todoResponse.getTotalTodoListItem() + " Todos • " + todoResponse.getProgress() + "% Done");
+        progressLabel.addClassName("progress-label");
+/*
         NativeLabel lblDoneRation= new NativeLabel("0% Done");
-        NativeLabel lblTotalTodo = new NativeLabel("10 Todos");
-        HorizontalLayout divTodoType = new HorizontalLayout(/*lblTodoType,*/ lblTotalTodo,lblDoneRation);
+        NativeLabel lblTotalTodo = new NativeLabel("10 Todos");*/
+
+        HorizontalLayout divTodoType = new HorizontalLayout(/*lblTodoType,*/progressLabel /*lblTotalTodo,lblDoneRation*/);
         divTodoType.setSpacing(true);
         divTodoType.setWidth("100%");
         divTodoType.addClassName("margin-top-card");
@@ -124,19 +132,29 @@ public class TodoCardsView extends FlexLayout {
 
         String startDateFormatted = formatter.format(startDateValue);
         String endDateFormatted = formatter.format(endDateValue);
-        Span startDateSpan = new Span();
-        startDateSpan.getElement().getThemeList().add("badge warning");
-        startDateSpan.add(startDateFormatted);
-        Span endDateSpan = new Span();
-        endDateSpan.getElement().getThemeList().add("badge success");
-        endDateSpan.add(endDateFormatted);
-        card.setHeader(lblTitle);
+
+        HorizontalLayout dates = new HorizontalLayout();
+        dates.addClassName("date-row");
+        dates.setWidthFull();
+
+
+        Span startDateSpan = new Span(startDateFormatted);
+        startDateSpan.addClassNames("date-badge", "start-date");
+
+
+        Span endDateSpan = new Span(endDateFormatted);
+        endDateSpan.addClassNames("date-badge", "end-date");
+
+
+
+        card.setHeader(taskTitle);
         HorizontalLayout dateRange = new HorizontalLayout();
-        dateRange.getStyle().set("justify-content", "space-between");
-        dateRange.setSpacing(true);
-        dateRange.setWidth("100%");
+        dateRange.addClassName("date-row");
+        dateRange.setWidthFull();;
+
+        dateRange.setJustifyContentMode(JustifyContentMode.BETWEEN);
         dateRange.add(startDateSpan,endDateSpan);
-        dateRange.addClassName("margin-top-card");
+
 
         Button btnAddTodo = new Button();
         Icon addIcon = VaadinIcon.PLUS_CIRCLE_O.create();
@@ -180,7 +198,7 @@ public class TodoCardsView extends FlexLayout {
                 if(updatedTodoResponseDTO !=null){
                     if(updatedTodoResponseDTO.getTitle() !=null && !updatedTodoResponseDTO.getTitle().isBlank()){
                         log.info("Title is not null"+updatedTodoResponseDTO.getTitle());
-                        lblTitle.setTitle(updatedTodoResponseDTO.getTitle());
+                        taskTitle.setTitle(updatedTodoResponseDTO.getTitle());
                     }
                     if(updatedTodoResponseDTO.getGoalStartDate() !=null){
                         LocalDateTime updatedStartDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(updatedTodoResponseDTO.getGoalStartDate(), "Asia/Dhaka");
@@ -213,8 +231,10 @@ public class TodoCardsView extends FlexLayout {
             openEditDialog(todoResponse,updateConsumer);
         }).stopPropagation();
 
-
-        card.addToFooter(btnAddTodo, btnEdit, btnDelete);
+        HorizontalLayout actions = new HorizontalLayout();
+        actions.addClassName("action-row");
+        actions.add(btnAddTodo, btnEdit, btnDelete);
+        card.addToFooter(actions);
         this.add(card);
     }
 

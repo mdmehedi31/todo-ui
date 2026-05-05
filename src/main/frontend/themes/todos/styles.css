@@ -4,7 +4,8 @@
 @import url("./views/sign-up.css");
 @import url("./views/todo-ai.css");
 @import url("./views/home.css");
-
+@import url("./views/task-card.css");
+@import  url("./views/dasboard-todo.css");
 
 
 :root {
