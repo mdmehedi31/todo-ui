@@ -81,6 +81,9 @@ public class TodoCardsView extends FlexLayout {
         }
     }
 
+
+
+
     public void buildTodoList(TodoResponseDTO todoResponse) {
 
         Card card = new Card();

@@ -1,10 +1,7 @@
 package com.todo.ui.view.ai;
 
 
-import com.todo.ui.todoService.ITodoService;
-import com.todo.ui.view.AddTodoItemDialog;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dialog.DialogVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -17,7 +14,9 @@ public class TaskCard extends VerticalLayout {
     private Button addBtn;
     private Button editBtn;
     private Button deleteBtn;
-
+    private H3 taskTitle;
+    private  Span start;
+    private   Span end;
     public TaskCard(String title, String startDate, String endDate, Integer todoCount, Integer progress) {
         addClassName("task-card");
         setSpacing(false);
@@ -25,7 +24,7 @@ public class TaskCard extends VerticalLayout {
         setWidth("300px");
         setHeight("240px");
         // Title Section
-        H3 taskTitle = new H3(title);
+       taskTitle = new H3(title);
         Tooltip.forComponent(taskTitle)
                 .setText(title);
         taskTitle.addClassName("task-title");
@@ -35,10 +34,10 @@ public class TaskCard extends VerticalLayout {
         dates.addClassName("date-row");
         dates.setWidthFull();
 
-        Span start = new Span(startDate);
+        start = new Span(startDate);
         start.addClassNames("date-badge", "start-date");
 
-        Span end = new Span(endDate);
+        end = new Span(endDate);
         end.addClassNames("date-badge", "end-date");
 
         dates.add(start, end);
@@ -79,5 +78,17 @@ public class TaskCard extends VerticalLayout {
     }
     public Button getDeleteBtn() {
         return deleteBtn;
+    }
+
+    public void setTaskTitle(String text) {
+        this.taskTitle.setText(text);
+    }
+
+    public void setStartDate(String text) {
+        this.start.setText(text);
+    }
+
+    public void setEndDate(String text) {
+        this.end.setText(text);
     }
 }

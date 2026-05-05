@@ -4,6 +4,7 @@ package com.todo.ui.view.ai;
 import com.todo.ui.todoService.ITodoService;
 import com.todo.ui.view.AddTodoItemDialog;
 import com.todo.ui.view.AddTodoPopup;
+import com.todo.ui.view.TodoCardsView;
 import com.todom.library.dto.ApiResponse;
 import com.todom.library.dto.TodoResponseDTO;
 import com.todom.library.enums.SuccessOrFailedEnum;
@@ -15,12 +16,15 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.dialog.DialogVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,6 +39,7 @@ public class TaskDashboardView extends Div {
     private ITodoService todoService;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private Integer userId=1;
+    private static final Logger log = LoggerFactory.getLogger(TaskDashboardView.class);
     public TaskDashboardView(ITodoService todoService) {
         this.todoService = todoService;
         setSizeFull();
@@ -119,14 +124,46 @@ public class TaskDashboardView extends Div {
                     openAddChecklistDialog(todoResponseDTO.getId());
                 }).stopPropagation();
 
+                Consumer<Boolean> isDeletedCardConsumer =(isDeleted)->{
+                    if(isDeleted){
+                        taskCard.removeFromParent();
+                    }else{
+                        Notification.show("Board delete failed");
+                    }
+                };
 
                 taskCard.getDeleteBtn().getElement().addEventListener("click", e->{
-                    openAddChecklistDialog(todoResponseDTO.getId());
+                    deleteTodoBoard(todoResponseDTO.getId(),isDeletedCardConsumer);
                 }).stopPropagation();
 
 
+
+                Consumer<TodoResponseDTO> updateConsumer = (updatedTodoResponseDTO)->{
+                    log.info("When update consumer accept");
+                    getUI().ifPresent(ui->ui.access(()->{
+                        if(updatedTodoResponseDTO !=null){
+                            if(updatedTodoResponseDTO.getTitle() !=null && !updatedTodoResponseDTO.getTitle().isBlank()){
+                                log.info("Title is not null"+updatedTodoResponseDTO.getTitle());
+                                taskCard.setTaskTitle(updatedTodoResponseDTO.getTitle());
+                            }
+                            if(updatedTodoResponseDTO.getGoalStartDate() !=null){
+                                LocalDateTime updatedStartDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(updatedTodoResponseDTO.getGoalStartDate(), "Asia/Dhaka");
+                                log.info("updatedStartDateValue is "+updatedStartDateValue);
+                                taskCard.setStartDate(formatter.format(updatedStartDateValue));
+                            }
+                            if(updatedTodoResponseDTO.getGoalEndDate() !=null) {
+                                LocalDateTime updatedEndDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(updatedTodoResponseDTO.getGoalEndDate(), "Asia/Dhaka");
+                                log.info("updatedEndDateValue is "+updatedEndDateValue);
+                                taskCard.setEndDate(formatter.format(updatedEndDateValue));
+                            }
+                        }
+                    }));
+                };
+
+
                 taskCard.getEditBtn().getElement().addEventListener("click", e->{
-                    openAddChecklistDialog(todoResponseDTO.getId());
+
+                    openEditDialog(todoResponseDTO,updateConsumer);
                 }).stopPropagation();
 
 
