@@ -1,0 +1,143 @@
+/* The Side Drawer Panel */
+.side-drawer {
+    position: fixed;
+    top: 0;
+    right: -450px; /* Hidden off-screen */
+    width: 400px;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.85); /* Matches your Cyber theme */
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.side-drawer.open {
+    right: 0; /* Slide in */
+}
+
+/* Background Dimmer */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.drawer-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.todo-details-view {
+    background: transparent;
+    color: #e2e8f0;
+}
+
+/* Header Styling */
+.details-header {
+    background: rgba(30, 41, 59, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.details-title {
+    margin: 0 0 15px 0 !important;
+    font-size: 1.5rem;
+    background: linear-gradient(90deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.task-count-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* List Styling */
+.details-list-container {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* Adjusting the rows (assuming TodoListItemRow uses HorizontalLayout) */
+.details-list-container > vaadin-horizontal-layout {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 10px;
+    transition: background 0.2s;
+    border: 1px solid transparent;
+}
+
+.details-list-container > vaadin-horizontal-layout:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.empty-msg {
+    color: #64748b;
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+    margin-top: 40px;
+}
+
+/* Styling the Resizable Splitter */
+vaadin-split-layout::part(splitter) {
+    min-width: 4px;
+    background: rgba(59, 130, 246, 0.2);
+    transition: background 0.3s;
+}
+
+vaadin-split-layout::part(splitter):hover {
+    background: #3b82f6;
+    cursor: col-resize;
+}
+
+/* Glassmorphism for the Pane */
+.glass-details-pane {
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(25px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.details-sticky-header {
+    background: rgba(30, 41, 59, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    z-index: 10;
+}
+
+.details-board-title {
+    margin: 0 !important;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #f8fafc;
+}
+
+.details-scroll-area {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 1rem;
+}
+
+/* Make Row items look like modern list items */
+.details-scroll-area > vaadin-horizontal-layout {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}

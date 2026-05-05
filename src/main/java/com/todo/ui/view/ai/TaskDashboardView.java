@@ -1,10 +1,12 @@
 package com.todo.ui.view.ai;
 
 
+import com.todo.ui.googleAuth.GoogleCalendareService;
 import com.todo.ui.todoService.ITodoService;
 import com.todo.ui.view.AddTodoItemDialog;
 import com.todo.ui.view.AddTodoPopup;
 import com.todo.ui.view.TodoCardsView;
+import com.todo.ui.view.TodoDetailsView;
 import com.todom.library.dto.ApiResponse;
 import com.todom.library.dto.TodoResponseDTO;
 import com.todom.library.enums.SuccessOrFailedEnum;
@@ -20,6 +22,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
@@ -37,15 +40,22 @@ import java.util.function.Consumer;
 public class TaskDashboardView extends Div {
 
     private ITodoService todoService;
+    private GoogleCalendareService googleCalendareService;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private Integer userId=1;
+    private Div drawer;
+    private Div overlay;
+    private VerticalLayout drawerContent;
+    private  Div grid = new Div();
+    private SplitLayout splitLayout;
     private static final Logger log = LoggerFactory.getLogger(TaskDashboardView.class);
-    public TaskDashboardView(ITodoService todoService) {
+
+    public TaskDashboardView(ITodoService todoService,GoogleCalendareService googleCalendareService) {
         this.todoService = todoService;
+        this.googleCalendareService = googleCalendareService;
         setSizeFull();
         addClassName("dashboard-root");
 
-        // ── Reuse your Space Background ──
         Div stars = new Div();
         stars.addClassName("stars-layer");
         Div nebula = new Div(); nebula.addClassNames("nebula", "nebula-main");
@@ -55,7 +65,6 @@ public class TaskDashboardView extends Div {
         content.setPadding(true);
         content.addClassName("dashboard-container");
 
-        // ── TOP HEADER (Branding & Global Actions) ──
         HorizontalLayout header = new HorizontalLayout();
         header.addClassName("dashboard-header");
         header.setWidthFull();
@@ -73,19 +82,34 @@ public class TaskDashboardView extends Div {
         topActions.add(addBtn, googleBtn);
         header.add(logo, topActions);
         header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN.BETWEEN);
-
-        // ── TASK GRID ──
-        Div grid = new Div();
         grid.addClassName("task-grid");
+        loadTodoAndAddToGrid();
+        overlay = new Div();
+        overlay.addClassName("drawer-overlay");
+        overlay.addClickListener(e -> closeDrawer());
 
-        // Mock data matching image_a5c990.jpg
-        /*grid.add(new TaskCard("Environment Setup for project", "29.09.2025", "05.10.2025", "10 Todos", 0));
-        grid.add(new TaskCard("Create Product CRUD API", "29.09.2025", "05.10.2025", "10 Todos", 45));
-        grid.add(new TaskCard("DB setup should be first...", "29.09.2025", "05.10.2025", "10 Todos", 100));
-        grid.add(new TaskCard("New project environment", "07.10.2025", "31.10.2025", "10 Todos", 20));
-        grid.add(new TaskCard("New JPA Create", "29.09.2025", "05.10.2025", "10 Todos", 0));
-        grid.add(new TaskCard("Add Product Listener", "29.09.2025", "05.10.2025", "10 Todos", 75));
-        */
+        drawer = new Div();
+        drawer.addClassName("side-drawer");
+
+        drawerContent = new VerticalLayout();
+        drawerContent.setPadding(true);
+        drawer.add(drawerContent);
+
+        splitLayout = new SplitLayout();
+        splitLayout.setSizeFull();
+        splitLayout.setOrientation(SplitLayout.Orientation.HORIZONTAL);
+        splitLayout.setSplitterPosition(100);
+
+        content.add(header, grid);
+        Div detailsPlaceholder = new Div();
+
+        splitLayout.addToPrimary(content);
+        splitLayout.addToSecondary(detailsPlaceholder);
+
+        add(stars, nebula, splitLayout);
+    }
+
+    private void loadTodoAndAddToGrid(){
         List<TodoResponseDTO> todoResponseDTOList= this.todoService.getAllTodos(userId);
         if(todoResponseDTOList !=null && todoResponseDTOList.size()>0){
             for(TodoResponseDTO todoResponseDTO : todoResponseDTOList){
@@ -137,6 +161,9 @@ public class TaskDashboardView extends Div {
                 }).stopPropagation();
 
 
+                taskCard.addClickListener(e->{
+                    openDrawer(todoResponseDTO);
+                });
 
                 Consumer<TodoResponseDTO> updateConsumer = (updatedTodoResponseDTO)->{
                     log.info("When update consumer accept");
@@ -169,8 +196,27 @@ public class TaskDashboardView extends Div {
 
             }
         }
-        content.add(header, grid);
-        add(stars, nebula, content);
+    }
+
+    private void closeDrawer() {
+        drawer.removeClassName("open");
+        overlay.removeClassName("visible");
+    }
+
+    private void openDrawer(TodoResponseDTO todo) {
+        drawerContent.removeAll();
+
+        H3 title = new H3(todo.getTitle());
+        title.getStyle().set("color", "white").set("margin-bottom", "20px");
+
+        TodoDetailsView taskDetailsView = new TodoDetailsView(todoService,userId,todo,this.googleCalendareService);
+
+        splitLayout.addToSecondary(taskDetailsView);
+        splitLayout.setSplitterPosition(70);
+        /*
+        drawer.add(taskDetailsView);
+        drawer.addClassName("open");
+        overlay.addClassName("visible");*/
     }
 
     private void openAddChecklistDialog(Integer todoBoardId) {
