@@ -22,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Route(value = "todo-generator",layout = MainLayout.class)
+@PageTitle("AI TODO Generator")
 public class TodoGeneratorView extends VerticalLayout {
 
     private final VerticalLayout todoContainer;

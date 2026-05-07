@@ -1,0 +1,45 @@
+/* The Slider Container */
+.emoji-slider {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    height: 60px;
+    margin-bottom: -20px;
+}
+
+/* The Emoji itself sliding across */
+.emoji-slider span {
+    display: inline-block;
+    font-size: 3rem;
+    position: absolute;
+    animation: slide-emoji 3s linear infinite;
+}
+
+@keyframes slide-emoji {
+    from { left: -10%; }
+    to { left: 110%; }
+}
+
+/* Styling the bad path text */
+.bad-path-text {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 15px 0;
+    border: 1px dashed #ef4444;
+}
+
+/* Keep your large gradient 404 from before */
+.error-code-wacky {
+    font-size: 10rem !important;
+    margin: 0 !important;
+    background: linear-gradient(135deg, #f87171, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+}

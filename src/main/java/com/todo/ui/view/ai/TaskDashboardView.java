@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Route(value ="todos",layout = MainLayout.class)
-@PageTitle("TaskHub - Workspace")
+@PageTitle("TaskHub - Dashboard")
 @PermitAll
 public class TaskDashboardView extends Div {
 

@@ -1,33 +1,53 @@
-/* Styling the Sidebar (Drawer) */
+/* Sidebar Container */
 vaadin-app-layout [part="drawer"] {
-    background-color: #ffffff;
+    background-color: #ffffff; /* Clean white background like image_08ef5a */
     border-right: 1px solid #e2e8f0;
-    width: 240px;
+    width: 260px;
 }
 
-/* Styling Navigation Items */
+/* Individual Nav Items */
 vaadin-side-nav-item {
-    margin: 4px 8px;
+    margin: 4px 12px;
     border-radius: 8px;
-    transition: background 0.2s;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
+/* Hover Effect */
 vaadin-side-nav-item:hover {
     background-color: #f1f5f9;
 }
 
-/* Active State (When the user is on that view) */
+/* Active State - Matches image_08ef5a.png exactly */
 vaadin-side-nav-item[active] {
-    background-color: #e0e7ff;
-    color: #3730a3;
-    font-weight: 600;
+    background-color: #e0e7ff !important; /* Light blue background */
+    color: #3730a3 !important;           /* Darker blue text */
 }
 
+/* Icon Styling - Ensuring they are centered and colored */
 vaadin-side-nav-item vaadin-icon {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #64748b;
+    margin-right: 8px;
 }
 
+/* Icon Color when Active */
 vaadin-side-nav-item[active] vaadin-icon {
-    color: #3b82f6;
+    color: #3b82f6 !important;
+}
+
+/* App Logo Styling */
+.sidebar-header {
+    padding: 24px 20px;
+    color: #1e293b;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* Style for the view name in the navbar */
+vaadin-app-layout vaadin-horizontal-layout > span {
+    border-bottom: 2px solid #ef4444; /* Red underline from image_0882b5 */
+    padding-bottom: 2px;
+    margin-left: 10px;
+    color: #1e293b;
 }

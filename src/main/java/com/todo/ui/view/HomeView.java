@@ -1,6 +1,7 @@
 package com.todo.ui.view;
 
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
@@ -116,6 +117,9 @@ public class HomeView extends Div {
         loginBtn.addClassName("login-btn");
         loginBtn.setWidthFull();
 
+        loginBtn.addClickListener(e->{
+           UI.getCurrent().navigate(DashboardOverviewView.class);
+        });
         // Forgot password
         Anchor forgotLink = new Anchor("#", "Forgot password?");
         forgotLink.addClassName("forgot-link");
