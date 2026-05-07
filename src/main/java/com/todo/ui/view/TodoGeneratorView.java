@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Route("todo-generator")
+@Route(value = "todo-generator",layout = MainLayout.class)
 public class TodoGeneratorView extends VerticalLayout {
 
     private final VerticalLayout todoContainer;

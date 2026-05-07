@@ -31,8 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-@Route(value = "/events")
-@Menu(order = 1, icon = LineAwesomeIconUrl.MEETUP,title = "Events")
+@Route(value = "events",layout = MainLayout.class)
 public class EventsView extends VerticalLayout {
 
 

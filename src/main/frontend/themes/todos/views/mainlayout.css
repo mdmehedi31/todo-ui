@@ -1,0 +1,33 @@
+/* Styling the Sidebar (Drawer) */
+vaadin-app-layout [part="drawer"] {
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    width: 240px;
+}
+
+/* Styling Navigation Items */
+vaadin-side-nav-item {
+    margin: 4px 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+vaadin-side-nav-item:hover {
+    background-color: #f1f5f9;
+}
+
+/* Active State (When the user is on that view) */
+vaadin-side-nav-item[active] {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    font-weight: 600;
+}
+
+vaadin-side-nav-item vaadin-icon {
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+vaadin-side-nav-item[active] vaadin-icon {
+    color: #3b82f6;
+}

@@ -14,7 +14,7 @@ import com.vaadin.flow.router.Route;
 
 import java.util.List;
 
-@Route("dashboard-overview")
+@Route(value="dashboard-overview",layout = MainLayout.class)
 public class DashboardOverviewView extends VerticalLayout {
 
     public DashboardOverviewView() {

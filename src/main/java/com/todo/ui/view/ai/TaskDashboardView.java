@@ -3,10 +3,7 @@ package com.todo.ui.view.ai;
 
 import com.todo.ui.googleAuth.GoogleCalendareService;
 import com.todo.ui.todoService.ITodoService;
-import com.todo.ui.view.AddTodoItemDialog;
-import com.todo.ui.view.AddTodoPopup;
-import com.todo.ui.view.TodoCardsView;
-import com.todo.ui.view.TodoDetailsView;
+import com.todo.ui.view.*;
 import com.todom.library.dto.ApiResponse;
 import com.todom.library.dto.TodoResponseDTO;
 import com.todom.library.enums.SuccessOrFailedEnum;
@@ -34,7 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.function.Consumer;
 
-@Route("tast-dashboard")
+@Route(value ="todos",layout = MainLayout.class)
 @PageTitle("TaskHub - Workspace")
 @PermitAll
 public class TaskDashboardView extends Div {
