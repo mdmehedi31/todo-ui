@@ -18,6 +18,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ import java.util.function.Consumer;
 public class TodoListItemRow extends FlexLayout {
 
     private Checkbox checkbox= new Checkbox();
-    private NativeLabel rowTitleLable = new NativeLabel();
+    private NativeLabel rowTitleLabel = new NativeLabel();
     private TodoListResponseDTO todoListResponseDTO;
     private static final Logger log = LoggerFactory.getLogger(TodoListItemRow.class);
     private Button btnDelete = new Button();
@@ -45,14 +46,27 @@ public class TodoListItemRow extends FlexLayout {
         this.userId = userId;
         this.googleCalendareService = googleCalendareService;
 
+        addClassName("todo-item-row");
+        setWidthFull();
+        setAlignItems(Alignment.CENTER);
+
         initView();
     }
 
     private void initView() {
+        rowTitleLabel.setText(todoListResponseDTO.getTitle());
+        rowTitleLabel.addClassName("todo-item-title");
+        setFlexGrow(1, rowTitleLabel);
+
+        setupIconButton(btnEdit, VaadinIcon.EDIT, "Edit item");
+        setupIconButton(btnDelete, VaadinIcon.TRASH, "Delete todo item");
+        setupIconButton(btnCalendarSetup, VaadinIcon.CALENDAR, "Setup schedule");
 
         Icon deleteIcon = VaadinIcon.TRASH.create();
         Icon editIcon = VaadinIcon.EDIT.create();
         Icon calendarSetupIcon = VaadinIcon.CALENDAR.create();
+
+        setFlexGrow(1, rowTitleLabel);
 
         btnEdit.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_WARNING);
         btnDelete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
@@ -77,13 +91,11 @@ public class TodoListItemRow extends FlexLayout {
            log.info("When delete icon : {}, {}", todoListResponseDTO.getTitle(), todoListResponseDTO.getId());
            this.deleteCardItemFromBoard(todoListResponseDTO.getId(), deleteTodoItemConsumer);
         });
-        rowTitleLable.setText(todoListResponseDTO.getTitle());
-        rowTitleLable.setWidthFull();
 
         Consumer<TodoListResponseDTO> todoListUpdateResponseConsumer= (todoListResponseDTO)->{
           if(todoListResponseDTO !=null && todoListResponseDTO.getId().equals(todoListResponseDTO.getId()) &&
           todoListResponseDTO.getTitle() !=null){
-              rowTitleLable.setText(todoListResponseDTO.getTitle());
+              rowTitleLabel.setText(todoListResponseDTO.getTitle());
           }
         };
         btnEdit.addClickListener(e->{
@@ -111,17 +123,27 @@ public class TodoListItemRow extends FlexLayout {
                dialog.setWidth("670px");
                dialog.add(scheduleSetupDialog);
                dialog.open();
-              // dialog.setHeight("170px");
                 log.info("Google calendar is connected..: {}", apiResponse.getMessage());
            }else{
                log.info("Google calendar not connected...: {}", apiResponse.getMessage());
                openGoogleCalenderConnectDialog();
            }
         });
+        HorizontalLayout actionButtons = new HorizontalLayout(btnEdit, btnDelete, btnCalendarSetup);
+        actionButtons.setSpacing(false); // Removes gaps between the buttons
+        actionButtons.addClassName("action-group");
 
-        this.add(checkbox,rowTitleLable,btnEdit,btnDelete, btnCalendarSetup);
+        this.add(checkbox,rowTitleLabel,actionButtons);
     }
 
+    private void setupIconButton(Button btn, VaadinIcon vIcon, String tooltip) {
+        Icon icon = vIcon.create();
+        icon.setSize("19px");
+        btn.setIcon(icon);
+        btn.setTooltipText(tooltip);
+        btn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        btn.addClassName("icon-btn-adjust");
+    }
 
     private void  openGoogleCalenderConnectDialog() {
         Dialog dialog= new Dialog();

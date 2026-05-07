@@ -1,0 +1,137 @@
+.dashboard-container {
+    background-color: #f8fafc;
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    min-height: 220px;
+}
+
+.stat-card-fixed {
+    flex: 1;
+}
+
+.big-number {
+    font-size: 3.2rem !important;
+    font-weight: 800 !important;
+    margin: 0.4rem 0 !important;
+}
+
+.blue-text { color: #3b82f6; }
+.red-text { color: #ef4444; }
+.green-text { color: #10b981; }
+
+/* In Progress Bar */
+.custom-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.custom-progress-bar div {
+    width: 65%;
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 10px;
+}
+
+/* Bullet List Styling */
+.task-bullet-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Done Circle */
+.progress-circle-ui {
+    width: 85px;
+    height: 85px;
+    border: 7px solid #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+/* Grid Badges */
+.badge-ui {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.priority-high-priority { background: #fee2e2; color: #991b1b; }
+.priority-medium { background: #fef3c7; color: #92400e; }
+.priority-low { background: #dcfce7; color: #166534; }
+
+.status-done { background: #dcfce7; color: #15803d; }
+.status-in-progress { background: #fef3c7; color: #92400e; }
+.status-overdue { background: #fee2e2; color: #b91c1c; }
+
+.bottom-card-height {
+    min-height: 400px;
+}
+
+/* Header Text */
+.header-title-wrapper h2 { margin: 0; font-weight: 800; }
+.header-title-wrapper span { color: #94a3b8; font-size: 0.9rem; }
+
+/* Stabilization for the Done Card circle */
+.progress-circle-ui {
+    width: 80px;
+    height: 80px;
+    min-width: 80px; /* Prevents shrinking */
+    min-height: 80px; /* Prevents flattening */
+    border: 7px solid #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e293b;
+    margin-left: 1rem; /* Keeps a gap between text and circle */
+    flex-shrink: 0;   /* CRITICAL: Stops the browser from squishing the circle */
+}
+
+/* Ensure the big number doesn't push the card boundaries */
+.big-number {
+    font-size: 3.2rem !important;
+    font-weight: 800 !important;
+    line-height: 1; /* Stops extra vertical spacing from breaking the card */
+    margin: 0.2rem 0 !important;
+}
+
+.green-text {
+    color: #1e293b; /* Note: In your screenshot, the "68" is actually dark/black, not green */
+}
+
+.small-muted-text {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    white-space: nowrap; /* Prevents the subtext from wrapping and breaking height */
+}
+
+.green-icon {
+    color: #10b981; /* Matches the green used in the status badges */
+    flex-shrink: 0;
+}
+
+/* Ensure the header row doesn't create unwanted gaps */
+.info-card .vaadin-horizontal-layout {
+    margin-bottom: 0;
+}
+
+/* Adjusting big-number margin for better vertical alignment with the icon */
+.big-number {
+    margin-top: -5px !important;
+}

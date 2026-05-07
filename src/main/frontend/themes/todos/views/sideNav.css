@@ -134,3 +134,92 @@ vaadin-split-layout::part(splitter):hover {
     margin-bottom: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Fix for the Row Container */
+.todo-item-row {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 8px 16px !important;
+    margin-bottom: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s;
+}
+
+.todo-item-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* FIX: Visibility for Checkbox in Dark Mode */
+.todo-item-row vaadin-checkbox {
+    --lumo-primary-color: #3b82f6;
+    cursor: pointer;
+}
+
+/* Style for the Text */
+.todo-item-title {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    padding-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Clean Icon Buttons */
+.item-actions .vaadin-button {
+    color: #94a3b8;
+    transition: color 0.2s, transform 0.1s;
+}
+
+.edit-btn:hover { color: #facc15 !important; }
+.delete-btn:hover { color: #ef4444 !important; }
+.calendar-btn:hover { color: #3b82f6 !important; }
+
+.item-actions .vaadin-button:active {
+    transform: scale(0.9);
+}
+
+/* 1. Make the Checkbox visible in Dark Mode */
+.todo-item-row vaadin-checkbox {
+    margin-left: 12px;
+    padding: 0;
+}
+
+/* Force the checkbox border to be visible */
+.todo-item-row vaadin-checkbox::part(checkbox) {
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 2. Fix the Icon Padding & Alignment */
+.icon-btn-adjust {
+    padding: 8px !important; /* Controlled padding */
+    margin-left: 5px;
+    color: #94a3b8 !important; /* Professional grey-blue icon color */
+    transition: all 0.2s ease;
+}
+
+.icon-btn-adjust:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border-radius: 6px;
+}
+
+/* 3. Spacing for the Title */
+.todo-item-title {
+    margin-left: 15px;
+    font-weight: 500;
+    color: #e2e8f0;
+}
+
+/* 4. Row Hover Effect */
+.todo-item-row {
+    height: 50px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.todo-item-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}

@@ -7,6 +7,7 @@
 @import url("./views/task-card.css");
 @import  url("./views/dasboard-todo.css");
 @import url("./views/sideNav.css");
+@import url("./views/dashboard.css");
 
 :root {
     --lumo-primary-color: linear-gradient(135deg, #667eea, #764ba2);
