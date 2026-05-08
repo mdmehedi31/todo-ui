@@ -2,7 +2,7 @@ package com.todo.ui.view;
 
 import com.todo.ui.googleAuth.GoogleCalendareService;
 import com.todo.ui.todoService.ITodoService;
-import com.todom.library.dto.TodoListResponseDTO;
+import com.todom.library.dto.TodoListRequestDTO;
 import com.todom.library.dto.TodoResponseDTO;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -77,12 +77,12 @@ public class TodoDetailsView extends VerticalLayout {
         listContainer.setWidthFull();
         listContainer.setPadding(true);
 
-        List<TodoListResponseDTO> items = this.todoService.getAllTodoListByTodoId(todoResponseDTO.getId());
+        List<TodoListRequestDTO> items = this.todoService.getAllTodoListByTodoId(todoResponseDTO.getId());
 
         log.info("Task list size: " + items.size());
         if (items != null && items.size()>0) {
             countBadge.setText(items.size() + " Tasks");
-            for (TodoListResponseDTO item : items) {
+            for (TodoListRequestDTO item : items) {
                 listContainer.add(new TodoListItemRow(item, todoService, todoResponseDTO.getId(), userId, googleCalendareService));
             }
         } else {
@@ -103,7 +103,7 @@ public class TodoDetailsView extends VerticalLayout {
         dialog.open();
     }
 
-    public void addTodoItem(TodoListResponseDTO dto, Integer boardId) {
+    public void addTodoItem(TodoListRequestDTO dto, Integer boardId) {
         listContainer.add(new TodoListItemRow(dto, todoService, boardId, userId, googleCalendareService));
     }
 

@@ -4,7 +4,6 @@ import com.todo.ui.event.AddTodoModelEvent;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.ApiResponse;
 import com.todom.library.dto.TodoListRequestDTO;
-import com.todom.library.dto.TodoListResponseDTO;
 import com.todom.library.dto.TodoResponseDTO;
 import com.todom.library.enums.SuccessOrFailedEnum;
 import com.todom.library.enums.TodoType;
@@ -413,7 +412,7 @@ public class TodoCardsView extends FlexLayout {
         todoListRequestDTO.setCreatedBy(1);
         todoListRequestDTO.setTodoBgColor(color);
 
-        TodoListResponseDTO responseDTO = this.todoService.createOrUpdateTodoListItem(todoListRequestDTO);
+        TodoListRequestDTO responseDTO = this.todoService.createOrUpdateTodoListItem(todoListRequestDTO);
 
         if (responseDTO != null && responseDTO.getId() != null) {
             log.info("Response id is {}", responseDTO.getId());

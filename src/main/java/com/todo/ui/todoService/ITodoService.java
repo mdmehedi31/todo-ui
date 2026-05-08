@@ -10,8 +10,8 @@ public interface ITodoService {
     public TodoResponseDTO createOrUpdateTodo(TodoRequestDTO todoRequestDTO);
     public List<TodoResponseDTO> getAllTodos(Integer userId);
 
-    public TodoListResponseDTO createOrUpdateTodoListItem(TodoListRequestDTO todoListRequestDTO);
-    public List<TodoListResponseDTO> getAllTodoListByTodoId(Integer todoId);
+    public TodoListRequestDTO createOrUpdateTodoListItem(TodoListRequestDTO todoListRequestDTO);
+    public List<TodoListRequestDTO> getAllTodoListByTodoId(Integer todoId);
     public ApiResponse deleteTodo(Integer todoId);
 
     // Todo list

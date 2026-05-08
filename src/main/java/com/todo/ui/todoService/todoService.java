@@ -48,7 +48,7 @@ public class todoService implements ITodoService{
     }
 
     @Override
-    public TodoListResponseDTO createOrUpdateTodoListItem(TodoListRequestDTO todoListRequestDTO) {
+    public TodoListRequestDTO createOrUpdateTodoListItem(TodoListRequestDTO todoListRequestDTO) {
         try{
 
             if(todoListRequestDTO.getId() !=null){
@@ -62,7 +62,7 @@ public class todoService implements ITodoService{
     }
 
     @Override
-    public List<TodoListResponseDTO> getAllTodoListByTodoId(Integer todoBoardId) {
+    public List<TodoListRequestDTO> getAllTodoListByTodoId(Integer todoBoardId) {
         try{
             return this.todoEndpoint.getAllTodoLists(todoBoardId);
         } catch (Exception e) {

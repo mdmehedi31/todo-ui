@@ -3,7 +3,6 @@ package com.todo.ui.view;
 import com.todo.ui.event.AddTodoItemEvent;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.TodoListRequestDTO;
-import com.todom.library.dto.TodoListResponseDTO;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Shortcuts;
@@ -31,12 +30,12 @@ public class AddTodoItemDialog extends Dialog {
     private static final Logger log = LoggerFactory.getLogger(AddTodoItemDialog.class);
     private Integer todoBoardId;
     private ITodoService todoService;
-    private TodoListResponseDTO todoListResponseDTO;
-    private Consumer<TodoListResponseDTO> todoListUpdateResponseConsumer;
+    private TodoListRequestDTO todoListResponseDTO;
+    private Consumer<TodoListRequestDTO> todoListUpdateResponseConsumer;
     private TextArea addTodoTextArea;
     private  Button addTodoButton;
-    public AddTodoItemDialog(Integer todoBoardId,ITodoService todoService, TodoListResponseDTO todoListResponseDTO,
-                             Consumer<TodoListResponseDTO> todoListUpdateResponseConsumer) {
+    public AddTodoItemDialog(Integer todoBoardId,ITodoService todoService, TodoListRequestDTO todoListResponseDTO,
+                             Consumer<TodoListRequestDTO> todoListUpdateResponseConsumer) {
         this.todoBoardId=todoBoardId;
         this.todoService=todoService;
         this.todoListResponseDTO=todoListResponseDTO;
@@ -146,7 +145,7 @@ public class AddTodoItemDialog extends Dialog {
             todoListRequestDTO.setCreatedBy(1);
             todoListRequestDTO.setTodoBgColor(color);
         }
-        TodoListResponseDTO responseDTO = this.todoService.createOrUpdateTodoListItem(todoListRequestDTO);
+        TodoListRequestDTO responseDTO = this.todoService.createOrUpdateTodoListItem(todoListRequestDTO);
 
         if (responseDTO != null && responseDTO.getId() != null) {
             log.info("Response id is {}", responseDTO.getId());

@@ -9,7 +9,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,28 +51,28 @@ public class TodoEndpoint {
     }
 
     // Todo List Endpoint
-    public TodoListResponseDTO createTodoList(TodoListRequestDTO todoListRequestDTO) {
+    public TodoListRequestDTO createTodoList(TodoListRequestDTO todoListRequestDTO) {
         try{
             log.info("When trying to create todo list");
-            TodoListResponseDTO createResponse = this.restEndPointCaller.postCallerWithRequestBody(TodoEndpointPath.CREATE_TODO_LIST_ITEM, todoListRequestDTO, TodoListResponseDTO.class);
+            TodoListRequestDTO createResponse = this.restEndPointCaller.postCallerWithRequestBody(TodoEndpointPath.CREATE_TODO_LIST_ITEM, todoListRequestDTO, TodoListRequestDTO.class);
             return createResponse;
         } catch (Exception e) {
             throw e;
         }
     }
 
-    public List<TodoListResponseDTO> getAllTodoLists(Integer todoBoardId) {
+    public List<TodoListRequestDTO> getAllTodoLists(Integer todoBoardId) {
       try{
-          List<TodoListResponseDTO> todoListResponseDTOList =this.restEndPointCaller.getCallerWithPathVariable(TodoEndpointPath.GET_TODO_LIST_ITEM, new ParameterizedTypeReference<List<TodoListResponseDTO>>() {}, todoBoardId);
+          List<TodoListRequestDTO> todoListResponseDTOList =this.restEndPointCaller.getCallerWithPathVariable(TodoEndpointPath.GET_TODO_LIST_ITEM, new ParameterizedTypeReference<List<TodoListRequestDTO>>() {}, todoBoardId);
           return todoListResponseDTOList;
       } catch (Exception e) {
           throw e;
       }
      }
 
-    public TodoListResponseDTO updateTodoList(TodoListRequestDTO todoListRequestDTO) {
+    public TodoListRequestDTO updateTodoList(TodoListRequestDTO todoListRequestDTO) {
         try{
-        TodoListResponseDTO todoListResponseDTO= this.restEndPointCaller.putCallerWithRequestBody(TodoEndpointPath.UPDATE_TODO_LIST_ITEM, todoListRequestDTO, TodoListResponseDTO.class);
+            TodoListRequestDTO todoListResponseDTO= this.restEndPointCaller.putCallerWithRequestBody(TodoEndpointPath.UPDATE_TODO_LIST_ITEM, todoListRequestDTO, TodoListRequestDTO.class);
         return todoListResponseDTO;
         }catch (Exception e) {
             throw e;

@@ -4,7 +4,7 @@ import com.todo.ui.gAuth.view.GoogleCalendarConnectionDialog;
 import com.todo.ui.googleAuth.GoogleCalendareService;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.ApiResponse;
-import com.todom.library.dto.TodoListResponseDTO;
+import com.todom.library.dto.TodoListRequestDTO;
 import com.todom.library.enums.SuccessOrFailedEnum;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -28,7 +28,7 @@ public class TodoListItemRow extends FlexLayout {
 
     private Checkbox checkbox= new Checkbox();
     private NativeLabel rowTitleLabel = new NativeLabel();
-    private TodoListResponseDTO todoListResponseDTO;
+    private TodoListRequestDTO todoListResponseDTO;
     private static final Logger log = LoggerFactory.getLogger(TodoListItemRow.class);
     private Button btnDelete = new Button();
     private Button btnEdit = new Button();
@@ -38,8 +38,8 @@ public class TodoListItemRow extends FlexLayout {
     private ITodoService todoService;
     private Integer userId;
     private GoogleCalendareService googleCalendareService;
-    public TodoListItemRow(TodoListResponseDTO todoListResponseDTO, ITodoService todoService,Integer boardId,
-                           Integer userId,GoogleCalendareService googleCalendareService) {
+    public TodoListItemRow(TodoListRequestDTO todoListResponseDTO, ITodoService todoService, Integer boardId,
+                           Integer userId, GoogleCalendareService googleCalendareService) {
         this.todoListResponseDTO = todoListResponseDTO;
         this.todoService = todoService;
         this.boardId = boardId;
@@ -51,6 +51,17 @@ public class TodoListItemRow extends FlexLayout {
         setAlignItems(Alignment.CENTER);
 
         initView();
+
+        eventListener();
+    }
+
+    private void eventListener() {
+
+        checkbox.addValueChangeListener(e -> {
+
+            this.todoListResponseDTO.setIsDone(e.getValue());
+            this.todoService.createOrUpdateTodoListItem(this.todoListResponseDTO);
+        });
     }
 
     private void initView() {
@@ -67,6 +78,8 @@ public class TodoListItemRow extends FlexLayout {
         Icon calendarSetupIcon = VaadinIcon.CALENDAR.create();
 
         setFlexGrow(1, rowTitleLabel);
+
+        checkbox.setValue(todoListResponseDTO.getIsDone());
 
         btnEdit.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_WARNING);
         btnDelete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
@@ -92,7 +105,7 @@ public class TodoListItemRow extends FlexLayout {
            this.deleteCardItemFromBoard(todoListResponseDTO.getId(), deleteTodoItemConsumer);
         });
 
-        Consumer<TodoListResponseDTO> todoListUpdateResponseConsumer= (todoListResponseDTO)->{
+        Consumer<TodoListRequestDTO> todoListUpdateResponseConsumer= (todoListResponseDTO)->{
           if(todoListResponseDTO !=null && todoListResponseDTO.getId().equals(todoListResponseDTO.getId()) &&
           todoListResponseDTO.getTitle() !=null){
               rowTitleLabel.setText(todoListResponseDTO.getTitle());
