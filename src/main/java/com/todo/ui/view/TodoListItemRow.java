@@ -38,6 +38,7 @@ public class TodoListItemRow extends FlexLayout {
     private ITodoService todoService;
     private Integer userId;
     private GoogleCalendareService googleCalendareService;
+
     public TodoListItemRow(TodoListRequestDTO todoListResponseDTO, ITodoService todoService, Integer boardId,
                            Integer userId, GoogleCalendareService googleCalendareService) {
         this.todoListResponseDTO = todoListResponseDTO;
@@ -59,8 +60,14 @@ public class TodoListItemRow extends FlexLayout {
 
         checkbox.addValueChangeListener(e -> {
 
+            log.info("When check the checkbox is selected: {}", e.getValue());
             this.todoListResponseDTO.setIsDone(e.getValue());
-            this.todoService.createOrUpdateTodoListItem(this.todoListResponseDTO);
+            TodoListRequestDTO todoListRequestDTO =  this.todoService.createOrUpdateTodoListItem(this.todoListResponseDTO);
+
+            if(todoListRequestDTO !=null)
+                log.info("When todo list request is not null");
+            else
+                log.info("todo list request is null");
         });
     }
 
@@ -79,7 +86,12 @@ public class TodoListItemRow extends FlexLayout {
 
         setFlexGrow(1, rowTitleLabel);
 
-        checkbox.setValue(todoListResponseDTO.getIsDone());
+        if(todoListResponseDTO.getIsDone() !=null){
+            checkbox.setValue(todoListResponseDTO.getIsDone());
+        }else{
+            checkbox.setValue(false);
+        }
+
 
         btnEdit.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_WARNING);
         btnDelete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
