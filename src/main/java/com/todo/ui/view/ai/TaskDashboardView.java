@@ -46,7 +46,7 @@ public class TaskDashboardView extends Div {
     private  Div grid = new Div();
     private SplitLayout splitLayout;
     private static final Logger log = LoggerFactory.getLogger(TaskDashboardView.class);
-
+    private TodoDetailsView taskDetailsView;
     public TaskDashboardView(ITodoService todoService,GoogleCalendareService googleCalendareService) {
         this.todoService = todoService;
         this.googleCalendareService = googleCalendareService;
@@ -72,6 +72,18 @@ public class TaskDashboardView extends Div {
         HorizontalLayout topActions = new HorizontalLayout();
         Button addBtn = new Button("Add Todo", VaadinIcon.PLUS.create());
         addBtn.addClassName("primary-action-btn");
+
+        Consumer<TodoResponseDTO> updateConsumer = (updatedTodoResponseDTO)->{
+          if(updatedTodoResponseDTO !=null){
+              addBoardCard(updatedTodoResponseDTO);
+          }
+        };
+
+
+        addBtn.addClickListener(e->{
+            log.info("Add new board card ... ... ");
+            openEditDialog(null,updateConsumer);
+        });
 
         Button googleBtn = new Button("Sync Google", VaadinIcon.GOOGLE_PLUS.create());
         googleBtn.addClassName("secondary-action-btn");
@@ -106,98 +118,131 @@ public class TaskDashboardView extends Div {
         add(stars, nebula, splitLayout);
     }
 
+    private void addBoardCard(TodoResponseDTO todoResponseDTO){
+
+
+        String title ="";
+        String startDate = "";
+        String endDate = "";
+        Integer totalTodoListItems =0;
+        Integer progress=0;
+        if(todoResponseDTO.getTitle()!=null && !todoResponseDTO.getTitle().isBlank()){
+            title = todoResponseDTO.getTitle();
+        }
+
+        if(todoResponseDTO.getGoalStartDate() !=null){
+            LocalDateTime startDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(todoResponseDTO.getGoalStartDate(), "Asia/Dhaka");
+
+            startDate=formatter.format(startDateValue);
+        }
+
+        if(todoResponseDTO.getGoalEndDate() !=null){
+            LocalDateTime endDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(todoResponseDTO.getGoalEndDate(), "Asia/Dhaka");
+            endDate=formatter.format(endDateValue);
+        }
+
+        if (todoResponseDTO.getTotalTodoListItem() !=null){
+            totalTodoListItems = todoResponseDTO.getTotalTodoListItem();
+        }
+
+        if(todoResponseDTO.getProgress() !=null){
+
+        }
+        TaskCard taskCard = new TaskCard(title, startDate, endDate, totalTodoListItems, progress);
+        grid.add(taskCard);
+
+        taskCard.getAddBtn().getElement().addEventListener("click", e->{
+            openAddChecklistDialog(todoResponseDTO.getId());
+        }).stopPropagation();
+
+        Consumer<Boolean> isDeletedCardConsumer =(isDeleted)->{
+            if(isDeleted){
+                taskCard.removeFromParent();
+            }else{
+                Notification.show("Board delete failed");
+            }
+        };
+
+        taskCard.getDeleteBtn().getElement().addEventListener("click", e->{
+            deleteTodoBoard(todoResponseDTO.getId(),isDeletedCardConsumer);
+        }).stopPropagation();
+
+
+        taskCard.addClickListener(e->{
+
+
+            if(this.taskDetailsView !=null){
+                log.info("When task details view is visible.");
+                Integer selectedTodo = this.taskDetailsView.getSelectedBoardId();
+                if(selectedTodo!=null && selectedTodo.equals(todoResponseDTO.getId())){
+                    log.info("When selected todo card in details view is visible.");
+                    closeDrawer();
+                }else{
+                    log.info("When details view is not visible.");
+                    openDrawer(todoResponseDTO);
+                }
+
+            }else{
+                log.info("When details view is not visible. outer");
+                openDrawer(todoResponseDTO);
+            }
+
+        });
+
+        Consumer<TodoResponseDTO> updateConsumer = (updatedTodoResponseDTO)->{
+            log.info("When update consumer accept");
+            getUI().ifPresent(ui->ui.access(()->{
+                if(updatedTodoResponseDTO !=null){
+                    if(updatedTodoResponseDTO.getTitle() !=null && !updatedTodoResponseDTO.getTitle().isBlank()){
+                        log.info("Title is not null"+updatedTodoResponseDTO.getTitle());
+                        taskCard.setTaskTitle(updatedTodoResponseDTO.getTitle());
+                    }
+                    if(updatedTodoResponseDTO.getGoalStartDate() !=null){
+                        LocalDateTime updatedStartDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(updatedTodoResponseDTO.getGoalStartDate(), "Asia/Dhaka");
+                        log.info("updatedStartDateValue is "+updatedStartDateValue);
+                        taskCard.setStartDate(formatter.format(updatedStartDateValue));
+                    }
+                    if(updatedTodoResponseDTO.getGoalEndDate() !=null) {
+                        LocalDateTime updatedEndDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(updatedTodoResponseDTO.getGoalEndDate(), "Asia/Dhaka");
+                        log.info("updatedEndDateValue is "+updatedEndDateValue);
+                        taskCard.setEndDate(formatter.format(updatedEndDateValue));
+                    }
+                }
+            }));
+        };
+
+
+        taskCard.getEditBtn().getElement().addEventListener("click", e->{
+
+            openEditDialog(todoResponseDTO,updateConsumer);
+        }).stopPropagation();
+
+
+    }
+
     private void loadTodoAndAddToGrid(){
         List<TodoResponseDTO> todoResponseDTOList= this.todoService.getAllTodos(userId);
         if(todoResponseDTOList !=null && todoResponseDTOList.size()>0){
             for(TodoResponseDTO todoResponseDTO : todoResponseDTOList){
-
-                String title ="";
-                String startDate = "";
-                String endDate = "";
-                Integer totalTodoListItems =0;
-                Integer progress=0;
-                if(todoResponseDTO.getTitle()!=null && !todoResponseDTO.getTitle().isBlank()){
-                    title = todoResponseDTO.getTitle();
-                }
-
-                if(todoResponseDTO.getGoalStartDate() !=null){
-                    LocalDateTime startDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(todoResponseDTO.getGoalStartDate(), "Asia/Dhaka");
-
-                    startDate=formatter.format(startDateValue);
-                }
-
-                if(todoResponseDTO.getGoalEndDate() !=null){
-                    LocalDateTime endDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(todoResponseDTO.getGoalEndDate(), "Asia/Dhaka");
-                    endDate=formatter.format(endDateValue);
-                }
-
-                if (todoResponseDTO.getTotalTodoListItem() !=null){
-                    totalTodoListItems = todoResponseDTO.getTotalTodoListItem();
-                }
-
-                if(todoResponseDTO.getProgress() !=null){
-
-                }
-                TaskCard taskCard = new TaskCard(title, startDate, endDate, totalTodoListItems, progress);
-                grid.add(taskCard);
-
-                taskCard.getAddBtn().getElement().addEventListener("click", e->{
-                    openAddChecklistDialog(todoResponseDTO.getId());
-                }).stopPropagation();
-
-                Consumer<Boolean> isDeletedCardConsumer =(isDeleted)->{
-                    if(isDeleted){
-                        taskCard.removeFromParent();
-                    }else{
-                        Notification.show("Board delete failed");
-                    }
-                };
-
-                taskCard.getDeleteBtn().getElement().addEventListener("click", e->{
-                    deleteTodoBoard(todoResponseDTO.getId(),isDeletedCardConsumer);
-                }).stopPropagation();
-
-
-                taskCard.addClickListener(e->{
-                    openDrawer(todoResponseDTO);
-                });
-
-                Consumer<TodoResponseDTO> updateConsumer = (updatedTodoResponseDTO)->{
-                    log.info("When update consumer accept");
-                    getUI().ifPresent(ui->ui.access(()->{
-                        if(updatedTodoResponseDTO !=null){
-                            if(updatedTodoResponseDTO.getTitle() !=null && !updatedTodoResponseDTO.getTitle().isBlank()){
-                                log.info("Title is not null"+updatedTodoResponseDTO.getTitle());
-                                taskCard.setTaskTitle(updatedTodoResponseDTO.getTitle());
-                            }
-                            if(updatedTodoResponseDTO.getGoalStartDate() !=null){
-                                LocalDateTime updatedStartDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(updatedTodoResponseDTO.getGoalStartDate(), "Asia/Dhaka");
-                                log.info("updatedStartDateValue is "+updatedStartDateValue);
-                                taskCard.setStartDate(formatter.format(updatedStartDateValue));
-                            }
-                            if(updatedTodoResponseDTO.getGoalEndDate() !=null) {
-                                LocalDateTime updatedEndDateValue = DateTimeUtil.convertUTCTimeToLocalDateTime(updatedTodoResponseDTO.getGoalEndDate(), "Asia/Dhaka");
-                                log.info("updatedEndDateValue is "+updatedEndDateValue);
-                                taskCard.setEndDate(formatter.format(updatedEndDateValue));
-                            }
-                        }
-                    }));
-                };
-
-
-                taskCard.getEditBtn().getElement().addEventListener("click", e->{
-
-                    openEditDialog(todoResponseDTO,updateConsumer);
-                }).stopPropagation();
-
-
+                addBoardCard(todoResponseDTO);
             }
         }
     }
 
     private void closeDrawer() {
-        drawer.removeClassName("open");
+        /*drawer.removeClassName("open");
         overlay.removeClassName("visible");
+        drawer.removeAll();
+        taskDetailsView = null;
+        this.drawerContent.removeAll();*/
+
+            drawer.setVisible(false);
+            overlay.setVisible(false);
+
+            splitLayout.setSplitterPosition(100);
+
+        taskDetailsView = null;
+
     }
 
     private void openDrawer(TodoResponseDTO todo) {
@@ -206,7 +251,7 @@ public class TaskDashboardView extends Div {
         H3 title = new H3(todo.getTitle());
         title.getStyle().set("color", "white").set("margin-bottom", "20px");
 
-        TodoDetailsView taskDetailsView = new TodoDetailsView(todoService,userId,todo,this.googleCalendareService);
+        taskDetailsView = new TodoDetailsView(todoService,userId,todo,this.googleCalendareService);
 
         splitLayout.addToSecondary(taskDetailsView);
         splitLayout.setSplitterPosition(70);

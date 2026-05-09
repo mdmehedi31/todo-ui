@@ -1,6 +1,7 @@
 package com.todo.ui.view;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -58,9 +59,13 @@ public class DashboardOverviewView extends VerticalLayout {
         range.setPrefixComponent(VaadinIcon.CALENDAR.create());
         range.addClassName("custom-date-select");
 
-        Button addBtn = new Button("Add New Task", VaadinIcon.PLUS.create());
+        Button addBtn = new Button("AI TODO Generator", VaadinIcon.PLUS.create());
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         addBtn.addClassName("add-task-button");
+
+        addBtn.addClickListener(e->{
+            UI.getCurrent().navigate(TodoGeneratorView.class);
+        });
 
         actions.add(range, addBtn);
 
@@ -92,39 +97,6 @@ public class DashboardOverviewView extends VerticalLayout {
         header.add(titleLabel, statusIcon);
         return header;
     }
-
-// Example usage inside createProgressCard:
-// card.add(createHeaderRow("IN PROGRESS", VaadinIcon.COG, "grey-icon"), value, ...);
-
-// Example usage inside createOverdueCard:
-// card.add(createHeaderRow("OVERDUE", VaadinIcon.WARNING, "grey-icon"), value, ...);
-
-    // Example usage inside createDoneCard:
-   /* private Component createDoneCard(String title, String val, String percent) {
-        HorizontalLayout card = new HorizontalLayout();
-        card.addClassNames("info-card", "stat-card-fixed");
-        card.setAlignItems(Alignment.CENTER);
-
-        VerticalLayout leftSide = new VerticalLayout();
-        leftSide.setPadding(false);
-        leftSide.setSpacing(false);
-
-        // Adjacent icon and title
-        leftSide.add(createHeaderRow(title, VaadinIcon.CHECK_CIRCLE, "green-icon"),
-                new H1(val),
-                new Span("Completion vs. Goal"));
-
-        // Apply styles to H1 and subtext
-        leftSide.getComponentAt(1).getElement().getClassList().add("big-number");
-        leftSide.getComponentAt(2).getElement().getClassList().add("small-muted-text");
-
-        Div circle = new Div(new Span(percent));
-        circle.addClassName("progress-circle-ui");
-
-        card.add(leftSide, circle);
-        card.setFlexGrow(1, leftSide);
-        return card;
-    }*/
 
     private Component createStatsSection() {
         HorizontalLayout layout = new HorizontalLayout();

@@ -51,9 +51,6 @@ public class AddTodoPopup extends VerticalLayout {
 
         this.setSpacing(false);
         this.getStyle().set("padding", "7px");
-       // this.setPadding(false);
-        //this.getStyle().set("margin-left", "-13px");
-     //   this.getStyle().set("margin-top", "-20px");
         initTodoPopup();
         if(this.todoResponse !=null){
             setData();
@@ -83,12 +80,6 @@ public class AddTodoPopup extends VerticalLayout {
 
     private void initTodoPopup() {
         todoText.setWidth("100%");
-       // btnStartDate.setText("Goal start date");
-        //Icon calenderStartDateIcon = VaadinIcon.CALENDAR.create();
-       // Icon calenderEndDateIcon = VaadinIcon.CALENDAR.create();
-       // btnStartDate.setIcon(calenderStartDateIcon);
-       // btnEndDate.setText("Goal end date");
-       // btnEndDate.setIcon(calenderEndDateIcon);
 
         Icon addIcon = VaadinIcon.PLUS.create();
         btnAddOrSave.setIcon(addIcon);
@@ -106,31 +97,8 @@ public class AddTodoPopup extends VerticalLayout {
         endDate.setWidth("133px");
         datePickerLayout.add(startDate,endDate);
 
-
         this.add(lblTitle,todoText, datePickerLayout, btnLayout);
         eventListener();
-       /* Popover popStartDate = new Popover();
-        popStartDate.setTarget(btnStartDate);
-        popStartDate.setWidth("300px");
-        popStartDate.addThemeVariants(PopoverVariant.ARROW,
-                PopoverVariant.LUMO_NO_PADDING);
-        popStartDate.setPosition(PopoverPosition.BOTTOM);
-
-        Popover popEndDate = new Popover();
-        popEndDate.setTarget(btnEndDate);
-        popEndDate.setWidth("300px");
-        popEndDate.setHeight("300px");
-        popEndDate.addThemeVariants(PopoverVariant.ARROW,
-                PopoverVariant.LUMO_NO_PADDING);
-        popEndDate.setPosition(PopoverPosition.BOTTOM);*/
-
-     /*   btnStartDate.addClickListener(e->{
-           openDateSelector("Start Date");
-        });
-
-        btnEndDate.addClickListener(e->{
-            openDateSelector("End Date");
-        });*/
     }
 
     private void eventListener() {

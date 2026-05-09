@@ -17,14 +17,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TodoDetailsView extends VerticalLayout {
 
-    private final ITodoService todoService;
-    private final Integer userId;
-    private final TodoResponseDTO todoResponseDTO;
-    private final GoogleCalendareService googleCalendareService;
-    private final VerticalLayout listContainer = new VerticalLayout();
+    private  ITodoService todoService;
+    private  Integer userId;
+    private  TodoResponseDTO todoResponseDTO;
+    private  GoogleCalendareService googleCalendareService;
+    private  VerticalLayout listContainer = new VerticalLayout();
+
     private static final Logger log = LoggerFactory.getLogger(TodoDetailsView.class);
 
     public TodoDetailsView(ITodoService todoService, Integer userId, TodoResponseDTO todoResponseDTO,
@@ -40,6 +42,14 @@ public class TodoDetailsView extends VerticalLayout {
         setSpacing(false);
 
         loadAndInit();
+    }
+
+    public Integer getSelectedBoardId(){
+
+        if(this.todoResponseDTO != null) {
+            return this.todoResponseDTO.getId();
+        }
+        return null;
     }
 
     private void loadAndInit() {
@@ -83,7 +93,8 @@ public class TodoDetailsView extends VerticalLayout {
         if (items != null && items.size()>0) {
             countBadge.setText(items.size() + " Tasks");
             for (TodoListRequestDTO item : items) {
-                listContainer.add(new TodoListItemRow(item, todoService, todoResponseDTO.getId(), userId, googleCalendareService));
+             //   listContainer.add(new TodoListItemRow(item, todoService, todoResponseDTO.getId(), userId, googleCalendareService));
+                addTodoItem(item,todoResponseDTO.getId());
             }
         } else {
             countBadge.setText("0 Tasks");
@@ -95,8 +106,15 @@ public class TodoDetailsView extends VerticalLayout {
         this.add(header, listContainer);
     }
 
+    Consumer<TodoListRequestDTO> todoListRequestDTOConsumer = (todoListRequestDTO) -> {
+
+        if(todoListRequestDTO !=null){
+            addTodoItem(todoListRequestDTO, this.todoResponseDTO.getId());
+        }
+    };
+
     private void openAddDialog() {
-        AddTodoItemDialog dialog = new AddTodoItemDialog(todoResponseDTO.getId(), todoService, null, null);
+        AddTodoItemDialog dialog = new AddTodoItemDialog(todoResponseDTO.getId(), todoService, null, todoListRequestDTOConsumer);
         dialog.addThemeVariants(DialogVariant.LUMO_NO_PADDING);
         dialog.setWidth("500px");
         dialog.setHeight("170px");
