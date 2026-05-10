@@ -18,4 +18,5 @@ public class TodoEndpointPath {
     public static final String USER_GOOGLE_CALENDAR_LIST= GOOGLE_CALENDAR_ADD_ROOT_PATH + "user-calendar-list/{userId}";
     public static final String SETUP_SCHEDULE_EVENT = GOOGLE_CALENDAR_ADD_ROOT_PATH +"event-create/{boardId}/{boardItemId}/{userId}";
     public static final String GET_USER_EVENTS= GOOGLE_CALENDAR_ADD_ROOT_PATH + "/get-all-user-events";
+    public static final String GET_DASHBOARD_DATA=ROOT_PATH + "/get-all-dashboard-data/{startDate}/{endDate}/{userId}";
 }

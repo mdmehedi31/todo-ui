@@ -3,6 +3,7 @@ package com.todo.ui.todoService;
 import com.todom.library.dto.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ITodoService {
@@ -23,4 +24,6 @@ public interface ITodoService {
     public ApiResponse setupEventSchedule(Integer boardId, Integer boardItemId, Integer userId, GoogleCalendarEventCreateDto calendarEventCreateDto);
     public List<CalendarEventDTO> getAllCalendarEventsByUserId(Integer userId, Instant startDate, Instant endDate);
     public ApiResponse addAiGenTodoList(TodoDTO todoDTO, Integer createdBy);
+
+    public DashBoardDTO getAllDashBoardDataWithDateRange(LocalDate startDate, LocalDate endDate, Integer userId);
 }

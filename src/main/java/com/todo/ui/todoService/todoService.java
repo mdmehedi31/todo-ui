@@ -10,6 +10,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -135,5 +136,10 @@ public class todoService implements ITodoService{
     @Override
     public ApiResponse addAiGenTodoList(TodoDTO todoDTO, Integer createdBy) {
         return this.todoEndpoint.addAiGenTodoList(todoDTO, createdBy);
+    }
+
+    @Override
+    public DashBoardDTO getAllDashBoardDataWithDateRange(LocalDate startDate, LocalDate endDate, Integer userId) {
+        return this.todoEndpoint.getDashBoard(startDate,endDate,userId);
     }
 }

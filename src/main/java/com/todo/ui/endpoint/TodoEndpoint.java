@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -114,6 +115,12 @@ public class TodoEndpoint {
     public ApiResponse addAiGenTodoList(TodoDTO todoDTO, Integer createdById) {
         ApiResponse response = this.restEndPointCaller.postCallerWithRequestBodyAndPathvariable(TodoEndpointPath.AI_GEN_TODO_LIST, todoDTO, ApiResponse.class, createdById);
         return response;
+    }
+
+    public DashBoardDTO getDashBoard(LocalDate startDate, LocalDate endDate, Integer userId) {
+        DashBoardDTO dashBoardData= this.restEndPointCaller.getCallerWithPathVariable(TodoEndpointPath.GET_DASHBOARD_DATA,
+                new ParameterizedTypeReference<DashBoardDTO>() {}, startDate,endDate,userId);
+        return dashBoardData;
     }
 
 

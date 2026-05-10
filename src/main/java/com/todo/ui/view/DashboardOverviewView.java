@@ -1,5 +1,8 @@
 package com.todo.ui.view;
 
+import com.todo.ui.todoService.ITodoService;
+import com.todom.library.dto.DashBoardDTO;
+import com.todom.library.dto.TodoResponseDTO;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -14,13 +17,19 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Route(value="dashboard-overview",layout = MainLayout.class)
 @PageTitle("Dashboard")
 public class DashboardOverviewView extends VerticalLayout {
 
-    public DashboardOverviewView() {
+    Grid<TodoResponseDTO> grid = new Grid<>();
+    private ITodoService todoService;
+    public DashboardOverviewView(ITodoService todoService) {
+
+        this.todoService = todoService;
+
         addClassName("dashboard-container");
         setSizeFull();
         setSpacing(false);
@@ -38,7 +47,6 @@ public class DashboardOverviewView extends VerticalLayout {
         header.setPadding(true);
         header.setAlignItems(Alignment.CENTER);
 
-        // Left Side: Title and Breadcrumb
         VerticalLayout titleArea = new VerticalLayout(
                 new H2("Dashboard Overview"),
                 new Span("Home / Dashboard")
@@ -104,16 +112,38 @@ public class DashboardOverviewView extends VerticalLayout {
         layout.setPadding(true);
         layout.setSpacing(true);
         layout.addClassName("stats-row");
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.minusMonths(2);
 
+        DashBoardDTO dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,1);
+
+        Integer totalInprogress =0;
+        Integer totalDone=0;
+        Integer totalDonePercentage=0;
+
+        if( dashBoardDTO.getTotalInprogress() != null ) {
+            totalInprogress = dashBoardDTO.getTotalInprogress();
+        }
+
+        if( dashBoardDTO.getTotalDone() != null ) {
+            totalDone = dashBoardDTO.getTotalDone();
+        }
+
+        if (dashBoardDTO.getTotalDoneItemPercentage() != null) {
+            totalDonePercentage = dashBoardDTO.getTotalDoneItemPercentage();
+        }
         // 1. In Progress
-        layout.add(createProgressCard("IN PROGRESS", "24", VaadinIcon.COG, "blue-text"));
+        layout.add(createProgressCard("IN PROGRESS", totalInprogress.toString(), VaadinIcon.COG, "blue-text"));
 
         // 2. Overdue
-        layout.add(createOverdueCard("OVERDUE", "13", List.of("Website Revamp", "Client Feedback Report", "Marketing Proposal")));
+       // layout.add(createOverdueCard("OVERDUE", ", List.of("Website Revamp", "Client Feedback Report", "Marketing Proposal")));
 
         // 3. Done
-        layout.add(createDoneCard("DONE", "68", "92%"));
+        layout.add(createDoneCard("DONE", totalDone.toString(), totalDonePercentage.toString()));
 
+        if(dashBoardDTO.getRecentTodos() != null) {
+            this.grid.setItems(dashBoardDTO.getRecentTodos());
+        }
         return layout;
     }
 
@@ -204,17 +234,17 @@ public class DashboardOverviewView extends VerticalLayout {
         VerticalLayout activityCard = new VerticalLayout(new H4("RECENT TASKS & ACTIVITY"));
         activityCard.addClassNames("info-card", "bottom-card-height");
 
-        Grid<String[]> grid = new Grid<>();
-        grid.addColumn(s -> s[0]).setHeader("Task");
-        grid.addComponentColumn(s -> createBadge(s[1])).setHeader("Priority");
-        grid.addColumn(s -> s[2]).setHeader("Due");
-        grid.addComponentColumn(s -> createStatusBadge(s[3])).setHeader("Status");
 
-        grid.setItems(
+        grid.addColumn( TodoResponseDTO::getTitle).setHeader("Task");
+        grid.addComponentColumn(s -> createBadge(s.getTotalTodoItems())).setHeader("Total TODOs");
+       // grid.addColumn(s -> s[2]).setHeader("Due");
+        grid.addComponentColumn(s -> createStatusBadge(s.getTotalDoneItems())).setHeader("Total DONE");
+
+      /*  grid.setItems(
                 new String[]{"Finalize Budget", "High Priority", "May 29", "Done"},
                 new String[]{"Update Inventory", "Medium", "June 3", "In Progress"},
                 new String[]{"Onboard New Hire", "Low", "May 15", "Overdue"}
-        );
+        );*/
         grid.addThemeVariants();
         grid.addClassName("dashboard-grid");
 
@@ -224,15 +254,15 @@ public class DashboardOverviewView extends VerticalLayout {
         return layout;
     }
 
-    private Span createBadge(String text) {
-        Span s = new Span(text);
-        s.addClassNames("badge-ui", "priority-" + text.toLowerCase().replace(" ", "-"));
+    private Span createBadge(Integer text) {
+        Span s = new Span(text+"");
+        s.addClassNames("badge-ui", "" + text);
         return s;
     }
 
-    private Span createStatusBadge(String text) {
-        Span s = new Span(text);
-        s.addClassNames("badge-ui", "status-" + text.toLowerCase().replace(" ", "-"));
+    private Span createStatusBadge(Integer text) {
+        Span s = new Span(text+"");
+        s.addClassNames("badge-ui", "" + text);
         return s;
     }
 }
