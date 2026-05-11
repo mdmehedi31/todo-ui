@@ -7,6 +7,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
@@ -18,6 +19,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Route(value="dashboard-overview",layout = MainLayout.class)
@@ -25,7 +27,12 @@ import java.util.List;
 public class DashboardOverviewView extends VerticalLayout {
 
     Grid<TodoResponseDTO> grid = new Grid<>();
+    Grid<TodoResponseDTO> overDueGrid = new Grid<>();
     private ITodoService todoService;
+    private  DashBoardDTO dashBoardDTO;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DatePicker startDatePicker = new DatePicker();
+    private DatePicker endDatePicker = new DatePicker();
     public DashboardOverviewView(ITodoService todoService) {
 
         this.todoService = todoService;
@@ -55,17 +62,16 @@ public class DashboardOverviewView extends VerticalLayout {
         titleArea.setSpacing(false);
         titleArea.addClassName("header-title-wrapper");
 
-        // Right Side: Actions
         HorizontalLayout actions = new HorizontalLayout();
         actions.setAlignItems(Alignment.BASELINE);
         actions.setSpacing(true);
-
+/*
         Select<String> range = new Select<>();
         range.setItems("May 1, 2026 - May 31, 2026");
         range.setValue("May 1, 2026 - May 31, 2026");
         range.setLabel("Filtered by: Current Month");
         range.setPrefixComponent(VaadinIcon.CALENDAR.create());
-        range.addClassName("custom-date-select");
+        range.addClassName("custom-date-select");*/
 
         Button addBtn = new Button("AI TODO Generator", VaadinIcon.PLUS.create());
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -74,12 +80,10 @@ public class DashboardOverviewView extends VerticalLayout {
         addBtn.addClickListener(e->{
             UI.getCurrent().navigate(TodoGeneratorView.class);
         });
-
-        actions.add(range, addBtn);
-
+        this.startDatePicker.setValue(LocalDate.now().minusDays(21));
+        this.endDatePicker.setValue(LocalDate.now());
+        actions.add(this.startDatePicker, this.endDatePicker, addBtn);
         header.add(titleArea, actions);
-
-        // FIX: Use setFlexGrow to push actions to the right
         header.setFlexGrow(1.0, titleArea);
 
         return header;
@@ -87,7 +91,7 @@ public class DashboardOverviewView extends VerticalLayout {
 
     private Component createHeaderRow(String title, VaadinIcon icon, String iconClass) {
         HorizontalLayout header = new HorizontalLayout();
-        header.setSpacing(true); // Small gap between text and icon
+        header.setSpacing(true);
         header.setAlignItems(Alignment.CENTER);
         header.setPadding(false);
 
@@ -112,10 +116,10 @@ public class DashboardOverviewView extends VerticalLayout {
         layout.setPadding(true);
         layout.setSpacing(true);
         layout.addClassName("stats-row");
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.minusMonths(2);
+        LocalDate startDate = this.startDatePicker.getValue();
+        LocalDate endDate =this.endDatePicker.getValue();
 
-        DashBoardDTO dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,1);
+        dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,1);
 
         Integer totalInprogress =0;
         Integer totalDone=0;
@@ -132,13 +136,7 @@ public class DashboardOverviewView extends VerticalLayout {
         if (dashBoardDTO.getTotalDoneItemPercentage() != null) {
             totalDonePercentage = dashBoardDTO.getTotalDoneItemPercentage();
         }
-        // 1. In Progress
         layout.add(createProgressCard("IN PROGRESS", totalInprogress.toString(), VaadinIcon.COG, "blue-text"));
-
-        // 2. Overdue
-       // layout.add(createOverdueCard("OVERDUE", ", List.of("Website Revamp", "Client Feedback Report", "Marketing Proposal")));
-
-        // 3. Done
         layout.add(createDoneCard("DONE", totalDone.toString(), totalDonePercentage.toString()));
 
         if(dashBoardDTO.getRecentTodos() != null) {
@@ -190,7 +188,6 @@ public class DashboardOverviewView extends VerticalLayout {
     private Component createDoneCard(String title, String val, String percent) {
         HorizontalLayout card = new HorizontalLayout();
         card.addClassNames("info-card", "stat-card-fixed");
-        // Change to START to align title with other cards
         card.setAlignItems(Alignment.START);
         card.setPadding(true);
 
@@ -199,21 +196,27 @@ public class DashboardOverviewView extends VerticalLayout {
         leftSide.setSpacing(false);
         leftSide.setAlignItems(Alignment.START);
 
-        // Group Title and Icon exactly like the others
         leftSide.add(createHeaderRow(title, VaadinIcon.CHECK_CIRCLE, "green-icon"),
                 new H1(val),
                 new Span("Completion vs. Goal"));
 
-        // Ensure style classes match the other cards
         leftSide.getComponentAt(1).getElement().getClassList().add("big-number");
         leftSide.getComponentAt(2).getElement().getClassList().add("small-muted-text");
 
-        // Circular progress container
+
         Div circleContainer = new Div();
         circleContainer.addClassName("circle-progress-wrapper");
 
+        String numericValue = percent.replace("%", "").trim();
+
         Div circle = new Div(new Span(percent));
         circle.addClassName("progress-circle-ui");
+        circle.getStyle().set("--percent", numericValue + "%");
+
+        circle.getElement().getStyle().set("--percent", numericValue + "%");
+
+        circle.getElement().getStyle().set("--percent", numericValue + "%");
+
         circleContainer.add(circle);
 
         card.add(leftSide, circleContainer);
@@ -222,13 +225,15 @@ public class DashboardOverviewView extends VerticalLayout {
         return card;
     }
 
+
     private Component createBottomSection() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
         layout.setPadding(true);
         layout.setSpacing(true);
 
-        VerticalLayout trendCard = new VerticalLayout(new H4("TASK PROGRESS TREND"));
+        VerticalLayout trendCard = new VerticalLayout(new H4("OVER DUE TODOS"));
+        trendCard.add(overDueGrid);
         trendCard.addClassNames("info-card", "bottom-card-height");
 
         VerticalLayout activityCard = new VerticalLayout(new H4("RECENT TASKS & ACTIVITY"));
@@ -236,22 +241,50 @@ public class DashboardOverviewView extends VerticalLayout {
 
 
         grid.addColumn( TodoResponseDTO::getTitle).setHeader("Task");
+        grid.addColumn(e->{
+            if(e.getGoalStartDate() !=null){
+                return formatter.format(e.getGoalStartDate());
+            }
+            return "";
+        }).setHeader("End date");
         grid.addComponentColumn(s -> createBadge(s.getTotalTodoItems())).setHeader("Total TODOs");
-       // grid.addColumn(s -> s[2]).setHeader("Due");
         grid.addComponentColumn(s -> createStatusBadge(s.getTotalDoneItems())).setHeader("Total DONE");
 
-      /*  grid.setItems(
-                new String[]{"Finalize Budget", "High Priority", "May 29", "Done"},
-                new String[]{"Update Inventory", "Medium", "June 3", "In Progress"},
-                new String[]{"Onboard New Hire", "Low", "May 15", "Overdue"}
-        );*/
         grid.addThemeVariants();
         grid.addClassName("dashboard-grid");
 
+        overDueGridInti();
         activityCard.add(grid);
         layout.add(trendCard, activityCard);
         layout.setFlexGrow(1.5, trendCard);
         return layout;
+    }
+
+    private void overDueGridInti() {
+
+        overDueGrid.addColumn( TodoResponseDTO::getTitle).setHeader("Task");
+        overDueGrid.addColumn(e->{
+
+            if(e.getGoalStartDate() !=null){
+                return formatter.format(e.getGoalStartDate());
+            }
+            return "";
+        }).setHeader("Start date");
+
+        overDueGrid.addColumn(e->{
+
+            if(e.getGoalEndDate() !=null){
+                return formatter.format(e.getGoalEndDate());
+            }
+            return "";
+        }).setHeader("End date");
+        overDueGrid.addComponentColumn(s -> createBadge(s.getTotalTodoItems())).setHeader("Total TODOs");
+
+        overDueGrid.addComponentColumn(s -> createStatusBadge(s.getTotalDoneItems())).setHeader("Total DONE");
+
+        if(this.dashBoardDTO !=null && this.dashBoardDTO.getOverDueTodos()!=null && this.dashBoardDTO.getOverDueTodos().size() > 0){
+            this.overDueGrid.setItems(this.dashBoardDTO.getOverDueTodos());
+        }
     }
 
     private Span createBadge(Integer text) {

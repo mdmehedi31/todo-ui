@@ -48,18 +48,6 @@
     line-height: 1.6;
 }
 
-/* Done Circle */
-.progress-circle-ui {
-    width: 85px;
-    height: 85px;
-    border: 7px solid #3b82f6;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #1e293b;
-}
 
 /* Grid Badges */
 .badge-ui {
@@ -85,24 +73,44 @@
 .header-title-wrapper h2 { margin: 0; font-weight: 800; }
 .header-title-wrapper span { color: #94a3b8; font-size: 0.9rem; }
 
-/* Stabilization for the Done Card circle */
+
 .progress-circle-ui {
+    /* Define a default value at the top of the class */
+    --percent: 0%;
+
     width: 80px;
     height: 80px;
-    min-width: 80px; /* Prevents shrinking */
-    min-height: 80px; /* Prevents flattening */
-    border: 7px solid #3b82f6;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #1e293b;
-    margin-left: 1rem; /* Keeps a gap between text and circle */
-    flex-shrink: 0;   /* CRITICAL: Stops the browser from squishing the circle */
+    position: relative;
+
+    /* Use the variable with the default fallback */
+    background: conic-gradient(
+            #10b981 0%,
+            #10b981 var(--percent),
+            #e2e8f0 var(--percent),
+            #e2e8f0 100%
+    );
 }
 
+
+.progress-circle-ui::before {
+    content: "";
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    background: white;
+    border-radius: 50%;
+}
+
+.progress-circle-ui span {
+    position: relative;
+    font-weight: bold;
+    color: #1e293b;
+    font-size: 0.9rem;
+}
 /* Ensure the big number doesn't push the card boundaries */
 .big-number {
     font-size: 3.2rem !important;
