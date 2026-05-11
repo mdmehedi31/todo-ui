@@ -39,6 +39,7 @@ public class DashboardOverviewView extends VerticalLayout {
     private DatePicker startDatePicker = new DatePicker();
     private DatePicker endDatePicker = new DatePicker();
     private  ZoneId userZone;
+    private Button btnSearch= new Button("Search");
     private static final Logger log = LoggerFactory.getLogger(DashboardOverviewView.class);
     public DashboardOverviewView(ITodoService todoService) {
 
