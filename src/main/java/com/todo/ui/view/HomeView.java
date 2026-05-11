@@ -12,7 +12,10 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.time.ZoneId;
 
 @Route("")
 @PageTitle("TaskHub - Sign In")
@@ -22,7 +25,7 @@ public class HomeView extends Div {
     public HomeView() {
         setSizeFull();
         addClassName("login-root");
-
+        findUserTimeZone();
 
         // Stars background layer
         Div starsLayer = new Div();
@@ -147,6 +150,15 @@ public class HomeView extends Div {
         add(starsLayer, nebula1, nebula2, nebula3, mainLayout);
     }
 
+    public void findUserTimeZone() {
+        UI.getCurrent().getPage().executeJs(
+                "return Intl.DateTimeFormat().resolvedOptions().timeZone"
+        ).then(String.class, zone -> {
+            System.out.println("User Timezone is: " + zone);
+            // Store this in your user session
+            VaadinSession.getCurrent().setAttribute("user-tz", ZoneId.of(zone));
+        });
+    }
     // ── Helper: feature row ───────────────────────────────────
     private HorizontalLayout createFeatureItem(VaadinIcon iconType,
                                                String title, String subtitle) {

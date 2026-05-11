@@ -3,6 +3,7 @@ package com.todo.ui.view;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.DashBoardDTO;
 import com.todom.library.dto.TodoResponseDTO;
+import com.todom.library.utils.DateTimeUtil;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -17,8 +18,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -33,9 +38,14 @@ public class DashboardOverviewView extends VerticalLayout {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private DatePicker startDatePicker = new DatePicker();
     private DatePicker endDatePicker = new DatePicker();
+    private  ZoneId userZone;
+    private static final Logger log = LoggerFactory.getLogger(DashboardOverviewView.class);
     public DashboardOverviewView(ITodoService todoService) {
 
         this.todoService = todoService;
+        ZoneId userZone = (ZoneId) VaadinSession.getCurrent().getAttribute("user-tz");
+        if (userZone == null)
+            userZone = ZoneId.of("Asia/Dhaka");
 
         addClassName("dashboard-container");
         setSizeFull();
@@ -243,7 +253,10 @@ public class DashboardOverviewView extends VerticalLayout {
         grid.addColumn( TodoResponseDTO::getTitle).setHeader("Task");
         grid.addColumn(e->{
             if(e.getGoalStartDate() !=null){
-                return formatter.format(e.getGoalStartDate());
+                log.info("date value is " + e.getGoalStartDate()+", board id is " + e.getId());
+                String timeZoneString = (userZone != null) ? userZone.getId() : "UTC";
+                LocalDate localDate= DateTimeUtil.convertUTCTimeToLocalDate(e.getGoalStartDate(),timeZoneString);
+                return formatter.format(localDate);
             }
             return "";
         }).setHeader("End date");
@@ -266,7 +279,9 @@ public class DashboardOverviewView extends VerticalLayout {
         overDueGrid.addColumn(e->{
 
             if(e.getGoalStartDate() !=null){
-                return formatter.format(e.getGoalStartDate());
+                String timeZoneString = (userZone != null) ? userZone.getId() : "UTC";
+                LocalDate localDate= DateTimeUtil.convertUTCTimeToLocalDate(e.getGoalStartDate(),timeZoneString);
+                return formatter.format(localDate);
             }
             return "";
         }).setHeader("Start date");
@@ -274,7 +289,9 @@ public class DashboardOverviewView extends VerticalLayout {
         overDueGrid.addColumn(e->{
 
             if(e.getGoalEndDate() !=null){
-                return formatter.format(e.getGoalEndDate());
+                String timeZoneString = (userZone != null) ? userZone.getId() : "UTC";
+                LocalDate localDate= DateTimeUtil.convertUTCTimeToLocalDate(e.getGoalEndDate(),timeZoneString);
+                return formatter.format(localDate);
             }
             return "";
         }).setHeader("End date");
