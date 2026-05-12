@@ -56,6 +56,15 @@ public class DashboardOverviewView extends VerticalLayout {
         add(createHeader());
         add(createStatsSection());
         add(createBottomSection());
+        loadDasahboardData();
+
+        eventListener();
+    }
+
+    private void eventListener() {
+        btnSearch.addClickListener(e -> {
+            loadDasahboardData();
+        });
     }
 
     private Component createHeader() {
@@ -76,14 +85,8 @@ public class DashboardOverviewView extends VerticalLayout {
         HorizontalLayout actions = new HorizontalLayout();
         actions.setAlignItems(Alignment.BASELINE);
         actions.setSpacing(true);
-/*
-        Select<String> range = new Select<>();
-        range.setItems("May 1, 2026 - May 31, 2026");
-        range.setValue("May 1, 2026 - May 31, 2026");
-        range.setLabel("Filtered by: Current Month");
-        range.setPrefixComponent(VaadinIcon.CALENDAR.create());
-        range.addClassName("custom-date-select");*/
 
+        btnSearch = new Button("Search", VaadinIcon.SEARCH.create());
         Button addBtn = new Button("AI TODO Generator", VaadinIcon.PLUS.create());
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         addBtn.addClassName("add-task-button");
@@ -93,7 +96,7 @@ public class DashboardOverviewView extends VerticalLayout {
         });
         this.startDatePicker.setValue(LocalDate.now().minusDays(21));
         this.endDatePicker.setValue(LocalDate.now());
-        actions.add(this.startDatePicker, this.endDatePicker, addBtn);
+        actions.add(this.startDatePicker, this.endDatePicker, btnSearch, addBtn);
         header.add(titleArea, actions);
         header.setFlexGrow(1.0, titleArea);
 
@@ -121,36 +124,44 @@ public class DashboardOverviewView extends VerticalLayout {
         return header;
     }
 
+    private void loadDasahboardData(){
+        LocalDate startDate = this.startDatePicker.getValue();
+        LocalDate endDate =this.endDatePicker.getValue();
+
+        dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,1);
+
+        createStatsSection();
+    }
+
     private Component createStatsSection() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
         layout.setPadding(true);
         layout.setSpacing(true);
         layout.addClassName("stats-row");
-        LocalDate startDate = this.startDatePicker.getValue();
-        LocalDate endDate =this.endDatePicker.getValue();
 
-        dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,1);
 
         Integer totalInprogress =0;
         Integer totalDone=0;
         Integer totalDonePercentage=0;
 
-        if( dashBoardDTO.getTotalInprogress() != null ) {
+        if(dashBoardDTO!=null && dashBoardDTO.getTotalInprogress() != null ) {
             totalInprogress = dashBoardDTO.getTotalInprogress();
         }
 
-        if( dashBoardDTO.getTotalDone() != null ) {
+        if(dashBoardDTO!=null && dashBoardDTO.getTotalDone() != null ) {
             totalDone = dashBoardDTO.getTotalDone();
         }
 
-        if (dashBoardDTO.getTotalDoneItemPercentage() != null) {
+        if (dashBoardDTO!=null && dashBoardDTO.getTotalDoneItemPercentage() != null) {
             totalDonePercentage = dashBoardDTO.getTotalDoneItemPercentage();
         }
+
+        log.info("Progress value : {}, done : {}, Done % : {}", totalInprogress, totalDone, totalDonePercentage);
         layout.add(createProgressCard("IN PROGRESS", totalInprogress.toString(), VaadinIcon.COG, "blue-text"));
         layout.add(createDoneCard("DONE", totalDone.toString(), totalDonePercentage.toString()));
 
-        if(dashBoardDTO.getRecentTodos() != null) {
+        if(dashBoardDTO!=null && dashBoardDTO.getRecentTodos() != null) {
             this.grid.setItems(dashBoardDTO.getRecentTodos());
         }
         return layout;
@@ -160,6 +171,8 @@ public class DashboardOverviewView extends VerticalLayout {
     private Component createProgressCard(String title, String val, VaadinIcon icon, String colorClass) {
         VerticalLayout card = new VerticalLayout();
         card.addClassNames("info-card", "stat-card-fixed");
+
+        log.info("Progress card->  Title : {}, Value : {}", title, val);
 
         HorizontalLayout top = new HorizontalLayout(new Span(title), icon.create());
         top.setWidthFull();
@@ -201,7 +214,7 @@ public class DashboardOverviewView extends VerticalLayout {
         card.addClassNames("info-card", "stat-card-fixed");
         card.setAlignItems(Alignment.START);
         card.setPadding(true);
-
+        log.info("DONE card->  Title : {}, Value : {}", title, val);
         VerticalLayout leftSide = new VerticalLayout();
         leftSide.setPadding(false);
         leftSide.setSpacing(false);
