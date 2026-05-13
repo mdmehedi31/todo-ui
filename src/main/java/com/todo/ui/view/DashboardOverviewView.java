@@ -40,6 +40,7 @@ public class DashboardOverviewView extends VerticalLayout {
     private DatePicker endDatePicker = new DatePicker();
     private  ZoneId userZone;
     private Button btnSearch= new Button("Search");
+    private   HorizontalLayout layout = new HorizontalLayout();
     private static final Logger log = LoggerFactory.getLogger(DashboardOverviewView.class);
     public DashboardOverviewView(ITodoService todoService) {
 
@@ -63,6 +64,7 @@ public class DashboardOverviewView extends VerticalLayout {
 
     private void eventListener() {
         btnSearch.addClickListener(e -> {
+            log.info("Trying to search between the date...");
             loadDasahboardData();
         });
     }
@@ -128,13 +130,14 @@ public class DashboardOverviewView extends VerticalLayout {
         LocalDate startDate = this.startDatePicker.getValue();
         LocalDate endDate =this.endDatePicker.getValue();
 
+        log.info("Start date : {}. End date : {}", startDate, endDate);
         dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,1);
 
         createStatsSection();
     }
 
     private Component createStatsSection() {
-        HorizontalLayout layout = new HorizontalLayout();
+        layout.removeAll();
         layout.setWidthFull();
         layout.setPadding(true);
         layout.setSpacing(true);
