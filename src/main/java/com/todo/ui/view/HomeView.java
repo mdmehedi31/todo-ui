@@ -1,19 +1,30 @@
 package com.todo.ui.view;
 
 
+import com.todo.ui.config.SecurityContext;
+import com.todo.ui.dto.CurrentUser;
+import com.todo.ui.endpoint.UserEndpoint;
+import com.todom.library.dto.UserAuthInfo;
+import com.todom.library.dto.UserDTO;
+import com.todom.library.dto.UserLoginDTO;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.ZoneId;
 
@@ -22,7 +33,15 @@ import java.time.ZoneId;
 @AnonymousAllowed
 public class HomeView extends Div {
 
-    public HomeView() {
+    private UserEndpoint userEndpoint;
+    private SecurityContext securityContext;
+
+    private static final Logger log = LoggerFactory.getLogger(HomeView.class);
+    public HomeView(UserEndpoint userEndpoint,SecurityContext securityContext) {
+
+        this.userEndpoint = userEndpoint;
+        this.securityContext = securityContext;
+
         setSizeFull();
         addClassName("login-root");
         findUserTimeZone();
@@ -92,11 +111,14 @@ public class HomeView extends Div {
         NativeLabel emailLabel = new NativeLabel("Email or Username");
         emailLabel.addClassName("field-label");
 
-        TextField emailField = new TextField();
+        EmailField emailField = new EmailField();
         emailField.addClassName("custom-text-field");
         emailField.setPlaceholder("Email or Username");
         emailField.setValue("mdsakibislam.mh35@mail.com");
         emailField.setWidthFull();
+        emailField.setErrorMessage("Email Can't be empty");
+        emailField.setRequiredIndicatorVisible(true);
+        emailField.setRequired(true);
 
         emailGroup.add(emailLabel, emailField);
 
@@ -112,6 +134,10 @@ public class HomeView extends Div {
         passwordField.setPlaceholder("Password");
         passwordField.setValue("password123");
         passwordField.setWidthFull();
+        passwordField.setErrorMessage("Password Can't be empty");
+        passwordField.setRequiredIndicatorVisible(true);
+        passwordField.setRequired(true);
+
 
         passwordGroup.add(passwordLabel, passwordField);
 
@@ -121,7 +147,43 @@ public class HomeView extends Div {
         loginBtn.setWidthFull();
 
         loginBtn.addClickListener(e->{
-           UI.getCurrent().navigate(DashboardOverviewView.class);
+
+            if(emailField.getValue()!=null && passwordField.getValue()!=null) {
+
+                UserLoginDTO userLoginDTO= new UserLoginDTO();
+                userLoginDTO.setEmail(emailField.getValue());
+                userLoginDTO.setPassword(passwordField.getValue());
+                log.info("Now, Trying to authenticate user");
+
+                UserAuthInfo response = userEndpoint.login(userLoginDTO);
+                if(response!=null) {
+                    log.info("Response get");
+                    if(response.getMessage() != null) {
+                        log.info("Message is not null : "+response.getMessage());
+                        Notification.show(response.getMessage());
+                    }else{
+                        log.info("User authenticated by users");
+                        redirectToDashboard(response);
+                    }
+                }else{
+                    log.info("Login Failed :: Parts :::");
+                    Notification.show("Login Failed");
+                }
+            }else{
+                emailField.setInvalid(true);
+                passwordField.setInvalid(true);
+            }
+
+        });
+
+        emailField.setValueChangeMode(ValueChangeMode.EAGER);
+        emailField.addValueChangeListener(event -> {
+           emailField.setInvalid(false);
+        });
+
+        passwordField.setValueChangeMode(ValueChangeMode.EAGER);
+        passwordField.addValueChangeListener(event -> {
+            passwordField.setInvalid(false);
         });
         // Forgot password
         Anchor forgotLink = new Anchor("#", "Forgot password?");
@@ -148,6 +210,36 @@ public class HomeView extends Div {
         mainLayout.add(leftPanel, card);
 
         add(starsLayer, nebula1, nebula2, nebula3, mainLayout);
+    }
+
+    private void redirectToDashboard(UserAuthInfo response) {
+
+        if(response.getUser() !=null) {
+            UserDTO userDTO = response.getUser();
+
+            CurrentUser currentUser = new CurrentUser();
+            currentUser.setEmail(userDTO.getEmail());
+            currentUser.setUserId(userDTO.getId());
+            if (userDTO.getFullName() != null) {
+
+                currentUser.setUserName(userDTO.getFullName());
+            }
+            currentUser.setJwtToken(response.getJwtToken());
+            if (userDTO.getPhoneNo() != null) {
+                currentUser.setPhoneNo(userDTO.getPhoneNo());
+            }
+
+            securityContext.setCurrentUser(currentUser);
+
+            if(securityContext.isAuthenticated()){
+                log.info("When user is authenticated,  now redirecting to Dashboard");
+                UI.getCurrent().navigate(DashboardOverviewView.class);
+            }
+
+        }else {
+            Notification.show("Can not login, please contact with admin");
+        }
+
     }
 
     public void findUserTimeZone() {

@@ -1,5 +1,7 @@
 package com.todo.ui.view;
 
+import com.todo.ui.config.SecurityContext;
+import com.todo.ui.dto.CurrentUser;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.DashBoardDTO;
 import com.todom.library.dto.TodoResponseDTO;
@@ -42,9 +44,14 @@ public class DashboardOverviewView extends VerticalLayout {
     private Button btnSearch= new Button("Search");
     private   HorizontalLayout layout = new HorizontalLayout();
     private static final Logger log = LoggerFactory.getLogger(DashboardOverviewView.class);
-    public DashboardOverviewView(ITodoService todoService) {
+    private SecurityContext securityContext;
+    private CurrentUser currentUser;
+    public DashboardOverviewView(ITodoService todoService,SecurityContext securityContext) {
 
         this.todoService = todoService;
+        this.securityContext = securityContext;
+        this.currentUser = securityContext.getCurrentUser();
+
         ZoneId userZone = (ZoneId) VaadinSession.getCurrent().getAttribute("user-tz");
         if (userZone == null)
             userZone = ZoneId.of("Asia/Dhaka");
@@ -131,7 +138,8 @@ public class DashboardOverviewView extends VerticalLayout {
         LocalDate endDate =this.endDatePicker.getValue();
 
         log.info("Start date : {}. End date : {}", startDate, endDate);
-        dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,1);
+        if(this.currentUser!= null && currentUser.getUserId()!=null)
+        dashBoardDTO = this.todoService.getAllDashBoardDataWithDateRange(startDate, endDate,currentUser.getUserId());
 
         createStatsSection();
     }
