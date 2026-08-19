@@ -193,16 +193,20 @@ vaadin-split-layout::part(splitter):hover {
 
 /* 2. Fix the Icon Padding & Alignment */
 .icon-btn-adjust {
-    padding: 8px !important; /* Controlled padding */
+    /*padding: 8px !important;*/ /* Controlled padding */
     margin-left: 5px;
     color: #94a3b8 !important; /* Professional grey-blue icon color */
     transition: all 0.2s ease;
+    background: none;
+    width: 0px !important;
+
 }
 
 .icon-btn-adjust:hover {
     background: rgba(255, 255, 255, 0.1) !important;
     color: #ffffff !important;
     border-radius: 6px;
+
 }
 
 /* 3. Spacing for the Title */
