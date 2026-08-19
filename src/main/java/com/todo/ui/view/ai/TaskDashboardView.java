@@ -1,6 +1,8 @@
 package com.todo.ui.view.ai;
 
 
+import com.todo.ui.config.SecurityContext;
+import com.todo.ui.dto.CurrentUser;
 import com.todo.ui.googleAuth.GoogleCalendareService;
 import com.todo.ui.todoService.ITodoService;
 import com.todo.ui.view.*;
@@ -39,7 +41,7 @@ public class TaskDashboardView extends Div {
     private ITodoService todoService;
     private GoogleCalendareService googleCalendareService;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private Integer userId=1;
+    private Integer userId=null;
     private Div drawer;
     private Div overlay;
     private VerticalLayout drawerContent;
@@ -47,9 +49,17 @@ public class TaskDashboardView extends Div {
     private SplitLayout splitLayout;
     private static final Logger log = LoggerFactory.getLogger(TaskDashboardView.class);
     private TodoDetailsView taskDetailsView;
-    public TaskDashboardView(ITodoService todoService,GoogleCalendareService googleCalendareService) {
+    private SecurityContext securityContext;
+    private CurrentUser currentUser;
+    public TaskDashboardView(ITodoService todoService,GoogleCalendareService googleCalendareService,SecurityContext securityContext) {
         this.todoService = todoService;
         this.googleCalendareService = googleCalendareService;
+        this.securityContext = securityContext;
+
+        if (securityContext != null) {
+            currentUser = securityContext.getCurrentUser();
+            userId=currentUser.getUserId();
+        }
         setSizeFull();
         addClassName("dashboard-root");
 
@@ -297,7 +307,7 @@ public class TaskDashboardView extends Div {
         dialog.addThemeVariants(DialogVariant.LUMO_NO_PADDING);
         dialog.setWidth("500px");
         dialog.setHeight("205px");
-        AddTodoPopup addTodoPopup = new AddTodoPopup(todoService, dialogCloseConsumer,todoResponse,updateConsumer);
+        AddTodoPopup addTodoPopup = new AddTodoPopup(todoService, dialogCloseConsumer,todoResponse,updateConsumer,currentUser);
         dialog.add(addTodoPopup);
         dialog.open();
     }

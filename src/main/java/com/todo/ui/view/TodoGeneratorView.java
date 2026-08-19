@@ -1,5 +1,7 @@
 package com.todo.ui.view;
 
+import com.todo.ui.config.SecurityContext;
+import com.todo.ui.dto.CurrentUser;
 import com.todo.ui.todoService.IAiGenerateTodoService;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.ApiResponse;
@@ -24,6 +26,7 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.checkerframework.checker.units.qual.Current;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +43,19 @@ public class TodoGeneratorView extends VerticalLayout {
     private final ProgressBar loadingBar;
     private final IAiGenerateTodoService iAiGenerateTodoService;
     private final ITodoService iTodoService;
+    private SecurityContext securityContext;
+    private CurrentUser currentUser;
     private static final Logger log = LoggerFactory.getLogger(TodoGeneratorView.class);
 
-    public TodoGeneratorView(IAiGenerateTodoService iAiGenerateTodoService,ITodoService iTodoService) {
+    public TodoGeneratorView(IAiGenerateTodoService iAiGenerateTodoService,
+                             ITodoService iTodoService, SecurityContext securityContext) {
         this.iAiGenerateTodoService = iAiGenerateTodoService;
         this.iTodoService = iTodoService;
+        this.securityContext = securityContext;
+
+        if(securityContext != null) {
+            currentUser = securityContext.getCurrentUser();
+        }
 
         setSizeFull();
         setPadding(false);
@@ -141,14 +152,16 @@ public class TodoGeneratorView extends VerticalLayout {
     private void addTodoToList(TodoDTO todoDTO){
 
 
-        ApiResponse response = this.iTodoService.addAiGenTodoList(todoDTO, 1);
+        if(currentUser != null) {
+            ApiResponse response = this.iTodoService.addAiGenTodoList(todoDTO, currentUser.getUserId());
 
-        if(response !=null && response.getMessage() != null && response.getMessage().equals(SuccessOrFailedEnum.SUCCESS)){
-            Notification.show("TODO save successfully");
-        }
-        else{
-            Notification.show("Save failed");
-        }
+            if (response != null && response.getMessage() != null && response.getMessage().equals(SuccessOrFailedEnum.SUCCESS)) {
+                Notification.show("TODO save successfully");
+            } else {
+                Notification.show("Save failed");
+            }
+        }else
+            Notification.show("Something went wrong, Please try again or contact with admin");
     }
 
     private void renderAiResponse(TodoDTO todoDTO) {

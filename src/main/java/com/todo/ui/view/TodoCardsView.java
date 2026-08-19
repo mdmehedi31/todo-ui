@@ -1,5 +1,6 @@
 package com.todo.ui.view;
 
+import com.todo.ui.dto.CurrentUser;
 import com.todo.ui.event.AddTodoModelEvent;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.ApiResponse;
@@ -42,10 +43,13 @@ public class TodoCardsView extends FlexLayout {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final Logger log = LoggerFactory.getLogger(TodoCardsView.class);
     private Consumer<TodoResponseDTO> todoResponseDTOConsumer;
-    public TodoCardsView(ITodoService todoService, Integer userId, Consumer<TodoResponseDTO> todoResponseDTOConsumer) {
+    private CurrentUser currentUser;
+    public TodoCardsView(ITodoService todoService, Integer userId,
+                         Consumer<TodoResponseDTO> todoResponseDTOConsumer, CurrentUser currentUser) {
         this.todoService = todoService;
         this.userId = userId;
         this.todoResponseDTOConsumer = todoResponseDTOConsumer;
+        this.currentUser=currentUser;
       /*  this.setFlexWrap(FlexWrap.WRAP);
         this.getStyle().set("gap", "1rem");*/
         addClassName("task-card");
@@ -139,15 +143,12 @@ public class TodoCardsView extends FlexLayout {
         dates.addClassName("date-row");
         dates.setWidthFull();
 
-
         Span startDateSpan = new Span(startDateFormatted);
         startDateSpan.addClassNames("date-badge", "start-date");
 
 
         Span endDateSpan = new Span(endDateFormatted);
         endDateSpan.addClassNames("date-badge", "end-date");
-
-
 
         card.setHeader(taskTitle);
         HorizontalLayout dateRange = new HorizontalLayout();
@@ -396,7 +397,7 @@ public class TodoCardsView extends FlexLayout {
         dialog.addThemeVariants(DialogVariant.LUMO_NO_PADDING);
         dialog.setWidth("500px");
         dialog.setHeight("205px");
-        AddTodoPopup addTodoPopup = new AddTodoPopup(todoService, dialogCloseConsumer,todoResponse,updateConsumer);
+        AddTodoPopup addTodoPopup = new AddTodoPopup(todoService, dialogCloseConsumer,todoResponse,updateConsumer,currentUser);
         dialog.add(addTodoPopup);
         dialog.open();
 
@@ -409,7 +410,7 @@ public class TodoCardsView extends FlexLayout {
         TodoListRequestDTO todoListRequestDTO = new TodoListRequestDTO();
         todoListRequestDTO.setTodoId(todoBoardId);
         todoListRequestDTO.setTitle(todoItem);
-        todoListRequestDTO.setCreatedBy(1);
+        todoListRequestDTO.setCreatedBy(userId);
         todoListRequestDTO.setTodoBgColor(color);
 
         TodoListRequestDTO responseDTO = this.todoService.createOrUpdateTodoListItem(todoListRequestDTO);

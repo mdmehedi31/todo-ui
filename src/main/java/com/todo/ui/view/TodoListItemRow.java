@@ -98,6 +98,8 @@ public class TodoListItemRow extends FlexLayout {
 
         btnDelete.setIcon(deleteIcon);
         btnDelete.setTooltipText("Delete todo item");
+        btnEdit.setWidth("0px !important");
+        btnDelete.setWidth("0px !important");
         btnEdit.setIcon(editIcon);
         btnEdit.setTooltipText("Edit item");
         btnCalendarSetup.setIcon(calendarSetupIcon);
