@@ -20,7 +20,8 @@ public class SecurityCheckView implements VaadinServiceInitListener {
             uiInitEvent.getUI().addBeforeEnterListener(e->{
 
               boolean isAuthenticated=  securityContext.isAuthenticated();
-              if (!isAuthenticated) {
+                System.out.println("Location is : "+e.getLocation().getPath());
+              if (!isAuthenticated && !e.getLocation().getPath().equals("signup")) {
                   System.out.println("You are not authenticated");
                   e.forwardTo(HomeView.class);
               }

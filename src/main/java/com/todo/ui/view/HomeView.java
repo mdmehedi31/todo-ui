@@ -202,6 +202,8 @@ public class HomeView extends Div {
 
         Anchor createLink = new Anchor("#", "Create account");
         createLink.addClassName("create-link");
+        createLink.setHref("/signup");
+        
 
         registerRow.add(newHere, createLink);
 

@@ -1,24 +1,44 @@
 package com.todo.ui.registrationAndlogin;
 
+import com.todo.ui.config.SecurityContext;
+import com.todo.ui.dto.CurrentUser;
+import com.todo.ui.endpoint.UserEndpoint;
+import com.todo.ui.view.DashboardOverviewView;
+import com.todom.library.dto.UserAuthInfo;
+import com.todom.library.dto.UserDTO;
+import com.todom.library.dto.UserRegistrationDTO;
+import com.todom.library.enums.SuccessOrFailedEnum;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Route("signup")
 @PageTitle("TaskHub - AI Powered Sign Up")
 @AnonymousAllowed
 public class SignUpView extends Div {
 
-    public SignUpView() {
+    private UserEndpoint userEndpoint;
+    private SecurityContext securityContext;
+    private static final Logger log = LoggerFactory.getLogger(SignUpView.class);
+
+    public SignUpView(UserEndpoint userEndpoint, SecurityContext securityContext) {
+
+        this.userEndpoint = userEndpoint;
+        this.securityContext = securityContext;
         setSizeFull();
         addClassName("login-root");
 
@@ -66,15 +86,57 @@ public class SignUpView extends Div {
         H2 cardTitle = new H2("Create Account");
         cardTitle.addClassName("card-title");
 
+        TextField username = new TextField();
+        username.setPlaceholder("Username");
+        EmailField email = new EmailField();
+        email.setRequired(true);
+        email.setRequiredIndicatorVisible(true);
+        email.setErrorMessage("Please enter a valid email address");
+        PasswordField password = new PasswordField();
+        password.setRequired(true);
+        password.setRequiredIndicatorVisible(true);
+        password.setErrorMessage("Please enter a valid password");
+
         // Use custom field groups to stop the overlapping issue
-        Div nameGroup = createFieldGroup("Full Name", new TextField());
-        Div emailGroup = createFieldGroup("Email Address", new EmailField());
-        Div passGroup = createFieldGroup("Create Password", new PasswordField());
+        Div nameGroup = createFieldGroup("Full Name", username);
+        Div emailGroup = createFieldGroup("Email Address",email);
+        Div passGroup = createFieldGroup("Create Password", password);
 
         Button signUpBtn = new Button("Get Started");
         signUpBtn.addClassName("login-btn");
         signUpBtn.setWidthFull();
 
+        email.setValueChangeMode(ValueChangeMode.LAZY);
+        email.addValueChangeListener(event -> {
+
+            email.setInvalid(email.getValue()==null || email.getValue().isBlank());
+        });
+
+        password.setValueChangeMode(ValueChangeMode.LAZY);
+        password.addValueChangeListener(event -> {
+
+            password.setInvalid(password.getValue()==null || password.getValue().isBlank());
+        });
+
+        signUpBtn.addClickListener(e -> {
+
+            if(email.getValue()!=null && !email.getValue().isEmpty() && password.getValue()!=null && !password.getValue().isBlank()) {
+            UserRegistrationDTO    userRegistrationDTO = new UserRegistrationDTO();
+            userRegistrationDTO.setEmail(email.getValue());
+            userRegistrationDTO.setPassword(password.getValue());
+            userRegistrationDTO.setFullName(username.getValue());
+
+            UserAuthInfo userAuthInfo = this.userEndpoint.createUser(userRegistrationDTO);
+            if (userAuthInfo != null) {
+                if(userAuthInfo.getMessage().equalsIgnoreCase(SuccessOrFailedEnum.SUCCESS.name())){
+                    redirectToDashboard(userAuthInfo);
+                }else{
+                    Notification.show(userAuthInfo.getMessage(), 3000, Notification.Position.MIDDLE);
+                }
+            }
+            }
+
+        });
         HorizontalLayout loginRow = new HorizontalLayout();
         loginRow.addClassName("register-row");
         Span existing = new Span("Already a member? ");
@@ -89,6 +151,36 @@ public class SignUpView extends Div {
         mainLayout.setFlexGrow(1, iconContainer);
 
         add(starsLayer, nebula1, nebula2, nebula3, mainLayout);
+    }
+
+    private void redirectToDashboard(UserAuthInfo response) {
+
+        if(response.getUser() !=null) {
+            UserDTO userDTO = response.getUser();
+
+            CurrentUser currentUser = new CurrentUser();
+            currentUser.setEmail(userDTO.getEmail());
+            currentUser.setUserId(userDTO.getId());
+            if (userDTO.getFullName() != null) {
+
+                currentUser.setUserName(userDTO.getFullName());
+            }
+            currentUser.setJwtToken(response.getJwtToken());
+            if (userDTO.getPhoneNo() != null) {
+                currentUser.setPhoneNo(userDTO.getPhoneNo());
+            }
+
+            securityContext.setCurrentUser(currentUser);
+
+            if(securityContext.isAuthenticated()){
+                log.info("When user is authenticated,  now redirecting to Dashboard");
+                UI.getCurrent().navigate(DashboardOverviewView.class);
+            }
+
+        }else {
+            Notification.show("Can not login, please contact with admin");
+        }
+
     }
 
     private Div createFieldGroup(String labelText, com.vaadin.flow.component.Component field) {
