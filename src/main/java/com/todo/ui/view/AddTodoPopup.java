@@ -1,5 +1,6 @@
 package com.todo.ui.view;
 
+import com.todo.ui.dto.CurrentUser;
 import com.todo.ui.event.AddTodoModelEvent;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.TodoRequestDTO;
@@ -41,13 +42,14 @@ public class AddTodoPopup extends VerticalLayout {
     private Consumer<TodoResponseDTO> updateOrSaveConsumer;
     private TodoResponseDTO todoResponse;
     private static final Logger log = LoggerFactory.getLogger(AddTodoPopup.class);
-
+    private CurrentUser currentUser;
     public AddTodoPopup( ITodoService  todoService,  Consumer<Boolean> dialogCloseConsumer,TodoResponseDTO todoResponse,
-                         Consumer<TodoResponseDTO> updateOrSaveConsumer) {
+                         Consumer<TodoResponseDTO> updateOrSaveConsumer, CurrentUser currentUser) {
         this.todoService = todoService;
         this.dialogCloseConsumer = dialogCloseConsumer;
         this.todoResponse=todoResponse;
         this.updateOrSaveConsumer = updateOrSaveConsumer;
+        this.currentUser=currentUser;
 
         this.setSpacing(false);
         this.getStyle().set("padding", "7px");
@@ -149,7 +151,7 @@ public class AddTodoPopup extends VerticalLayout {
             if(this.todoResponse !=null && this.todoResponse.getId() !=null){
                 todoRequestDTO.setId(this.todoResponse.getId());
             }else{
-                todoRequestDTO.setCreatedById(1);
+                todoRequestDTO.setCreatedById(currentUser.getUserId());
                 todoRequestDTO.setTodoType(TodoType.MANUAL);
             }
 

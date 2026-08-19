@@ -1,5 +1,7 @@
 package com.todo.ui.view;
 
+import com.todo.ui.config.SecurityContext;
+import com.todo.ui.dto.CurrentUser;
 import com.todo.ui.todoService.ITodoService;
 import com.todom.library.dto.AttendeeDTO;
 import com.todom.library.dto.CalendarEventDTO;
@@ -43,13 +45,19 @@ public class EventsView extends VerticalLayout {
     private DatePicker startDatePicker=new DatePicker();
     private DatePicker endDatePicker=new DatePicker();
     private Integer userId;
-    private String userEmail="mdmehedihasan.mh31@gmail.com";
+    private String userEmail=null;
     private String userTimeZone;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd:MM:yyyy HH:mm a");
+    private SecurityContext securityContext;
+    private CurrentUser currentUser;
     private static final Logger log= LoggerFactory.getLogger(EventsView.class);
-    public EventsView(ITodoService todoService) {
+    public EventsView(ITodoService todoService, SecurityContext securityContext) {
         this.todoService = todoService;
-        this.userId=1;
+        this.securityContext = securityContext;
+
+        currentUser=securityContext.getCurrentUser();
+        this.userId=currentUser.getUserId();
+        userEmail=currentUser.getEmail();
        Object timeZone =  VaadinSession.getCurrent().getAttribute("userTimeZone");
        userTimeZone=String.valueOf(timeZone);
         initComp();
