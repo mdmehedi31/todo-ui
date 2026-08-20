@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Route(value="dashboard-overview",layout = MainLayout.class)
 @PageTitle("Dashboard")
@@ -104,6 +105,9 @@ public class DashboardOverviewView extends VerticalLayout {
         });
         this.startDatePicker.setValue(LocalDate.now().minusDays(21));
         this.endDatePicker.setValue(LocalDate.now());
+        Locale finnishLocale = new Locale("fi", "FI");
+        startDatePicker.setLocale(finnishLocale);
+        endDatePicker.setLocale(finnishLocale);
         actions.add(this.startDatePicker, this.endDatePicker, btnSearch, addBtn);
         header.add(titleArea, actions);
         header.setFlexGrow(1.0, titleArea);

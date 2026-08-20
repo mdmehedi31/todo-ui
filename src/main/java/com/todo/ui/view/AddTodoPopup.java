@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 public class AddTodoPopup extends VerticalLayout {
@@ -38,8 +39,9 @@ public class AddTodoPopup extends VerticalLayout {
     private Button btnStartDate= new Button();
     private Button btnEndDate= new Button();
     private ITodoService  todoService;
-    private Consumer<Boolean> dialogCloseConsumer;
     private Consumer<TodoResponseDTO> updateOrSaveConsumer;
+    private Consumer<Boolean> dialogCloseConsumer;
+
     private TodoResponseDTO todoResponse;
     private static final Logger log = LoggerFactory.getLogger(AddTodoPopup.class);
     private CurrentUser currentUser;
@@ -97,6 +99,9 @@ public class AddTodoPopup extends VerticalLayout {
         datePickerLayout.setWidth("100%");
         startDate.setWidth("133px");
         endDate.setWidth("133px");
+        Locale finnishLocale = new Locale("fi", "FI");
+        startDate.setLocale(finnishLocale);
+        endDate.setLocale(finnishLocale);
         datePickerLayout.add(startDate,endDate);
 
         this.add(lblTitle,todoText, datePickerLayout, btnLayout);
