@@ -95,10 +95,9 @@ public class TaskDashboardView extends Div {
             openEditDialog(null,updateConsumer);
         });
 
-        Button googleBtn = new Button("Sync Google", VaadinIcon.GOOGLE_PLUS.create());
-        googleBtn.addClassName("secondary-action-btn");
 
-        topActions.add(addBtn, googleBtn);
+
+        topActions.add(addBtn);
         header.add(logo, topActions);
         header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN.BETWEEN);
         grid.addClassName("task-grid");

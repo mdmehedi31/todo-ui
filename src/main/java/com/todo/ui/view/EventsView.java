@@ -2,12 +2,16 @@ package com.todo.ui.view;
 
 import com.todo.ui.config.SecurityContext;
 import com.todo.ui.dto.CurrentUser;
+import com.todo.ui.googleAuth.GoogleCalendarAuth;
 import com.todo.ui.todoService.ITodoService;
+import com.todom.library.dto.ApiResponse;
 import com.todom.library.dto.AttendeeDTO;
 import com.todom.library.dto.CalendarEventDTO;
 import com.todom.library.enums.AttendeeStatus;
 import com.todom.library.utils.DateTimeUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.card.Card;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Header;
@@ -27,19 +31,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
+import oshi.hardware.platform.mac.MacPowerSource;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Route(value = "events",layout = MainLayout.class)
 @PageTitle("Events")
 public class EventsView extends VerticalLayout {
-
-
-
     private ITodoService todoService;
     private Button btnSearch= new Button("Search");
     private DatePicker startDatePicker=new DatePicker();
@@ -50,10 +53,12 @@ public class EventsView extends VerticalLayout {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd:MM:yyyy HH:mm a");
     private SecurityContext securityContext;
     private CurrentUser currentUser;
+    private GoogleCalendarAuth googleCalendarAuth;
     private static final Logger log= LoggerFactory.getLogger(EventsView.class);
-    public EventsView(ITodoService todoService, SecurityContext securityContext) {
+    public EventsView(ITodoService todoService, SecurityContext securityContext,GoogleCalendarAuth googleCalendarAuth) {
         this.todoService = todoService;
         this.securityContext = securityContext;
+        this.googleCalendarAuth = googleCalendarAuth;
 
         currentUser=securityContext.getCurrentUser();
         this.userId=currentUser.getUserId();
@@ -70,15 +75,37 @@ public class EventsView extends VerticalLayout {
         endDatePicker.setValue(LocalDate.now());
         startDatePicker.setLocale(new Locale("tr","TR"));
         endDatePicker.setLocale(new Locale("tr","TR"));
-        datePickerLayout.add(startDatePicker,endDatePicker,btnSearch);
+
+
+        Button googleBtn = new Button("Connect Google Calender");
+        googleBtn.setIcon(VaadinIcon.CALENDAR_BRIEFCASE.create());
+        googleBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+
+        datePickerLayout.add(startDatePicker,endDatePicker,btnSearch,googleBtn);
         datePickerLayout.setSizeFull();
         add(datePickerLayout);
 
         loadAndAddEvent();
 
+        googleBtn.addClickListener(e->{
+           connectGoogleCalendar();
+        });
         btnSearch.addClickListener(e -> {
            loadAndAddEvent();
         });
+    }
+
+    private void connectGoogleCalendar() {
+        Integer userId = securityContext.getCurrentUser().getUserId();
+
+        ApiResponse response = this.googleCalendarAuth.getGoogleCalendarConnectUrl(userId);
+        if(response !=null && response.getOther() !=null){
+            Map<String,Object> map=response.getOther();
+            String url =String.valueOf(map.get("url"));
+            log.info("Connect Google Calender URL: "+url);
+            UI.getCurrent().getPage().setLocation(url);
+        }
+
     }
 
     private void loadAndAddEvent() {

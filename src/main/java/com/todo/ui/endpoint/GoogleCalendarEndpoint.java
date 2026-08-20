@@ -21,11 +21,11 @@ public class GoogleCalendarEndpoint {
         this.restEndPointCaller = restEndPointCaller;
     }
 
-    public Map<String, String> getRedirectUrl(Integer userId){
+    public ApiResponse getRedirectUrl(Integer userId){
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("userId", String.valueOf(userId));
-        Map<String, String> map = this.restEndPointCaller.getCallerWithRequestParam(GoogleCalendarEndpointPath.GOOGEL_AUTH_URL,form, Map.class);
-        return map;
+        ApiResponse response = this.restEndPointCaller.getCallerWithPathVariable(GoogleCalendarEndpointPath.GOOGEL_AUTH_URL+"/"+userId, ApiResponse.class);
+        return response;
     }
 
     public ApiResponse saveUserGoogleCalendarConnectionCredential(MultiValueMap<String, String> authMap){

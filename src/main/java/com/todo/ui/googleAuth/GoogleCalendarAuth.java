@@ -21,7 +21,7 @@ public class GoogleCalendarAuth implements GoogleCalendareService {
     }
 
     @Override
-    public Map<String, String> getGoogleCalendarConnectUrl(Integer userId){
+    public ApiResponse  getGoogleCalendarConnectUrl(Integer userId){
         return googleCalendarEndpoint.getRedirectUrl(userId);
     }
 
@@ -30,7 +30,6 @@ public class GoogleCalendarAuth implements GoogleCalendareService {
         MultiValueMap<String, String> credentialsValue = new LinkedMultiValueMap<>();
         credentialsValue.add("code", code);
         credentialsValue.add("userId", userId);
-        credentialsValue.add("email","hello@email.com");
         return googleCalendarEndpoint.saveUserGoogleCalendarConnectionCredential(credentialsValue);
     }
 }

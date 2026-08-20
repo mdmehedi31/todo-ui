@@ -12,7 +12,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @Service
@@ -144,11 +146,19 @@ public class RestEndPointCaller {
 
     public <T> T getCallerWithRequestParam(String path,MultiValueMap<String, String> requestParam, Class<T> responseBody){
         try{
+            URI uri = UriComponentsBuilder
+                    .fromPath(path)
+                    .queryParams(requestParam)
+                    .build()
+                    .toUri();
+
+            System.out.println("URL: " + uri);
+            System.out.println("Headers: " + getHeaders());
             return restClient.get().
-                    uri(ub->ub.path(path).
+                    uri(uri/*ub->ub.path(path).
                             queryParams(requestParam).
-                            build()).
-                    headers(e->{
+                            build()*/).
+                    headers(e -> {
                         e.addAll(getHeaders());
                     }).
                     retrieve().
@@ -217,6 +227,12 @@ public class RestEndPointCaller {
     }
     public <T> T getCallerWithPathVariable(String path, Class<T> responseBody, Object... pathValue){
         try{
+
+            HttpHeaders headers = getHeaders();
+            System.out.println("Header value is: "+headers);
+            System.out.println("Auth header is "+
+                    headers.getFirst(HttpHeaders.AUTHORIZATION)
+            );
             return restClient.get().
                     uri(path, pathValue).
                     headers(e->{
@@ -225,13 +241,23 @@ public class RestEndPointCaller {
                     retrieve().
                     body(responseBody);
 
-        }catch(HttpClientErrorException e){
+        }catch (HttpClientErrorException.Unauthorized e){
+            System.out.println("Status Code: " + e.getStatusCode());
+            System.out.println("Response Body: " + e.getResponseBodyAsString());
+            throw e;
+        }
+       /* catch(HttpClientErrorException e){
+            System.out.println("Status Code: " + e.getStatusCode());
+            System.out.println("Response Body: " + e.getResponseBodyAsString());
             throw e;
         }
         catch(HttpServerErrorException e){
+            System.out.println("Status Code: " + e.getStatusCode());
+            System.out.println("Response Body: " + e.getResponseBodyAsString());
             throw e;
-        }
+        }*/
         catch(Exception e){
+            e.printStackTrace();
             throw e;
         }
     }
@@ -265,6 +291,8 @@ public class RestEndPointCaller {
         System.out.println("Current user value is : "+currentUser);
         if(currentUser != null) {
             System.out.println("Current user is not null... ... ...!");
+            System.out.println("token is :: "+currentUser.getJwtToken());
+
             headers.setBearerAuth(currentUser.getJwtToken());
         }
         return headers;

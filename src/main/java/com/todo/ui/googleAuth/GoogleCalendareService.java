@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface GoogleCalendareService {
-    public Map<String, String> getGoogleCalendarConnectUrl(Integer userId);
+    public ApiResponse getGoogleCalendarConnectUrl(Integer userId);
     public ApiResponse saveUserGoogleCalendarConnectionCredential(String code, String userId);
 
 }

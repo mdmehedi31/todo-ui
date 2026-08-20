@@ -1,6 +1,7 @@
 package com.todo.ui.gAuth.view;
 
 import com.todo.ui.googleAuth.GoogleCalendareService;
+import com.todom.library.dto.ApiResponse;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
@@ -49,9 +50,10 @@ public class GoogleCalendarConnectionDialog extends VerticalLayout {
     }
 
     private void getRedirectUrl() {
-        Map<String, String> urlMap = this.googleCalendareService.getGoogleCalendarConnectUrl(this.userId);
-        if(urlMap!=null){
-            String url = urlMap.get("url");
+        ApiResponse response = this.googleCalendareService.getGoogleCalendarConnectUrl(this.userId);
+        if(response!=null && response.getOther() !=null){
+            Map<String, Object> urlMap = response.getOther();
+            String url =String.valueOf(urlMap.get("url"));
             this.redirectUrlConsumer.accept(url);
         }else{
             Notification.show("No Google Calendar Connect URL");
