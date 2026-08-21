@@ -9,11 +9,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 @Component
-@VaadinSessionScope
-@Scope(
+/*@VaadinSessionScope*/
+/*@Scope(
         value = "vaadin-session",
         proxyMode = ScopedProxyMode.TARGET_CLASS
-)
+)*/
 public class SecurityContext {
 
     private CurrentUser currentUser;
