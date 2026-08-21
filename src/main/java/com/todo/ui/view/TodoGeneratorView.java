@@ -124,34 +124,44 @@ public class TodoGeneratorView extends VerticalLayout {
                 scrollToBottom();
 
                 UI ui = UI.getCurrent();
-                CompletableFuture.supplyAsync(() -> {
-                    return iAiGenerateTodoService.generateAiTodo(val);
-                }).thenAccept(todo -> {
-                    ui.access(() -> {
-                        loadingBar.addClassName("hidden");
-                        promptField.setEnabled(true);
-                        if (todo != null) {
-                            renderAiResponse(todo);
-                        } else {
-                            todoContainer.add(new Span("Service unavailable."));
-                        }
-                        scrollToBottom();
+                log.info("Generating the todos ... ... ...");
+                log.info("UI is null :: {}",ui==null);
+                try{
+                    CompletableFuture.supplyAsync(() -> {
+                        log.info("Start calling....");
+                        return iAiGenerateTodoService.generateAiTodo(val);
+                    }).thenAccept(todo -> {
+
+                        ui.access(() -> {
+                            log.info("todo size is : {}", todo !=null ? todo.getTodoList().size() : null);
+                            loadingBar.addClassName("hidden");
+                            promptField.setEnabled(true);
+                            if (todo != null) {
+                                log.info("AI generated TODO is not null .... ... ");
+                                renderAiResponse(todo);
+                            } else {
+                                log.info("Service is not available");
+                                todoContainer.add(new Span("Service unavailable."));
+                            }
+                            scrollToBottom();
+                        });
+                    }).exceptionally(ex -> {
+                        ui.access(() -> {
+                            loadingBar.addClassName("hidden");
+                            promptField.setEnabled(true);
+                        });
+                        return null;
                     });
-                }).exceptionally(ex -> {
-                    ui.access(() -> {
-                        loadingBar.addClassName("hidden");
-                        promptField.setEnabled(true);
-                    });
-                    return null;
-                });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
 
     private void addTodoToList(TodoDTO todoDTO){
-
-
         if(currentUser != null) {
             ApiResponse response = this.iTodoService.addAiGenTodoList(todoDTO, currentUser.getUserId());
 

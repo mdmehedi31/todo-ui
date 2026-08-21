@@ -23,15 +23,12 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.lineawesome.LineAwesomeIconUrl;
-import oshi.hardware.platform.mac.MacPowerSource;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -55,6 +52,8 @@ public class EventsView extends VerticalLayout {
     private CurrentUser currentUser;
     private GoogleCalendarAuth googleCalendarAuth;
     private static final Logger log= LoggerFactory.getLogger(EventsView.class);
+    private FlexLayout eventsLayout = new FlexLayout();
+    private  Span noEventFoundSpan = new Span("No Events Found Within this Period");
     public EventsView(ITodoService todoService, SecurityContext securityContext,GoogleCalendarAuth googleCalendarAuth) {
         this.todoService = todoService;
         this.securityContext = securityContext;
@@ -65,6 +64,7 @@ public class EventsView extends VerticalLayout {
         userEmail=currentUser.getEmail();
        Object timeZone =  VaadinSession.getCurrent().getAttribute("userTimeZone");
        userTimeZone=String.valueOf(timeZone);
+       noEventFoundSpan.getStyle().setAlignSelf(Style.AlignSelf.CENTER);
         initComp();
     }
 
@@ -75,7 +75,8 @@ public class EventsView extends VerticalLayout {
         endDatePicker.setValue(LocalDate.now());
         startDatePicker.setLocale(new Locale("tr","TR"));
         endDatePicker.setLocale(new Locale("tr","TR"));
-
+        eventsLayout.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+        eventsLayout.getStyle().set("gap", "0.5rem");
 
         Button googleBtn = new Button("Connect Google Calender");
         googleBtn.setIcon(VaadinIcon.CALENDAR_BRIEFCASE.create());
@@ -83,7 +84,7 @@ public class EventsView extends VerticalLayout {
 
         datePickerLayout.add(startDatePicker,endDatePicker,btnSearch,googleBtn);
         datePickerLayout.setSizeFull();
-        add(datePickerLayout);
+        add(datePickerLayout, noEventFoundSpan);
 
         loadAndAddEvent();
 
@@ -111,20 +112,24 @@ public class EventsView extends VerticalLayout {
     private void loadAndAddEvent() {
 
         LocalDate startDate = startDatePicker.getValue();
-
         Instant startTime = DateTimeUtil.convertLocaldateTodInstant(startDate);
         Instant endTime = DateTimeUtil.convertLocaldateTodInstant(endDatePicker.getValue());
 
-
         List<CalendarEventDTO> calendarEventDTOList= this.todoService.getAllCalendarEventsByUserId(userId,startTime,endTime);
         log.info("The calendar event dto list : {}",calendarEventDTOList.size());
-        FlexLayout eventsLayout = new FlexLayout();
-        eventsLayout.setFlexWrap(FlexLayout.FlexWrap.WRAP);
-        eventsLayout.getStyle().set("gap", "0.5rem");
-        for(CalendarEventDTO calendarEventDTO:calendarEventDTOList){
-            eventsLayout.add(createCalendarEventCard(calendarEventDTO));
-        }
 
+
+        if(calendarEventDTOList !=null && calendarEventDTOList.size()>0) {
+            log.info("The calendar event dto list : {}",calendarEventDTOList.size());
+            noEventFoundSpan.setVisible(false);
+            for (CalendarEventDTO calendarEventDTO : calendarEventDTOList) {
+                eventsLayout.add(createCalendarEventCard(calendarEventDTO));
+            }
+        }else{
+            log.info("The calendar event dto list is empty");
+            eventsLayout.removeAll();
+            noEventFoundSpan.setVisible(true);
+        }
         this.add(eventsLayout);
     }
 
@@ -184,7 +189,11 @@ public class EventsView extends VerticalLayout {
             }
         }
 
-        Span startTimeSpan = new Span(createIcon(VaadinIcon.CLOCK), new Span(formatter.format(calendarEventDTO.getStartDate())));
+        String startDate=null;
+        if(calendarEventDTO.getStartDate()!=null){
+            startDate=calendarEventDTO.getStartDate().toString();
+        }
+        Span startTimeSpan = new Span(createIcon(VaadinIcon.CLOCK), new Span(startDate!=null ? formatter.format(calendarEventDTO.getStartDate()) : ""));
         startTimeSpan.getElement().getThemeList().add("badge");
 
         if(status ==null || status.isBlank()){

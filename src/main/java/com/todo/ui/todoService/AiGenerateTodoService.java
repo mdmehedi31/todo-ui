@@ -15,6 +15,12 @@ public class AiGenerateTodoService implements IAiGenerateTodoService{
 
     @Override
     public TodoDTO generateAiTodo(String message) {
-        return this.aiGeneratorEndpoint.generateAndGetTodoList(message);
+        try{
+            System.out.println("Generate AI todo : " + message);
+            return this.aiGeneratorEndpoint.generateAndGetTodoList(message);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

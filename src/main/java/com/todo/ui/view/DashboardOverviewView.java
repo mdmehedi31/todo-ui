@@ -64,9 +64,8 @@ public class DashboardOverviewView extends VerticalLayout {
         add(createHeader());
         add(createStatsSection());
         add(createBottomSection());
-        loadDasahboardData();
-
         eventListener();
+        loadDasahboardData();
     }
 
     private void eventListener() {

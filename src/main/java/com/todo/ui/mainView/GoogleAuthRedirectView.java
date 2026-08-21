@@ -3,7 +3,9 @@ package com.todo.ui.mainView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todo.ui.googleAuth.GoogleCalendareService;
+import com.todo.ui.view.DashboardOverviewView;
 import com.todom.library.dto.ApiResponse;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -60,6 +62,7 @@ public class GoogleAuthRedirectView extends VerticalLayout implements BeforeEnte
                 Map<String, Object> others = response.getOther();
                 if (others != null) {
                     log.info("Save connection credential message is : {}, {}, {}, {}", response.getMessage(), others.get("accessToken"), others.get("refreshToken"), others.get("expiredAt"));
+                    UI.getCurrent().navigate(DashboardOverviewView.class);
                 } else {
                     log.info("Others is null...");
                 }
