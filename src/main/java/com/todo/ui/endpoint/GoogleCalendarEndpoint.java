@@ -33,4 +33,10 @@ public class GoogleCalendarEndpoint {
         return response;
     }
 
+
+    public Boolean isGoogleCalendarConnected(Integer userId){
+        Boolean isConnected = this.restEndPointCaller.getCallerWithPathVariable(GoogleCalendarEndpointPath.GOOGLE_CALENDAR_CONNECTED+"/"+userId, Boolean.class);
+        return isConnected;
+    }
+
 }

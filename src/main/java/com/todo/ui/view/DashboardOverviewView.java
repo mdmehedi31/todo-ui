@@ -40,7 +40,7 @@ public class DashboardOverviewView extends VerticalLayout {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private DatePicker startDatePicker = new DatePicker();
     private DatePicker endDatePicker = new DatePicker();
-    private  ZoneId userZone;
+    private ZoneId userZone;
     private Button btnSearch= new Button("Search");
     private   HorizontalLayout layout = new HorizontalLayout();
     private static final Logger log = LoggerFactory.getLogger(DashboardOverviewView.class);

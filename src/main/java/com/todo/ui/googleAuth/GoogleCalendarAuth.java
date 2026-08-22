@@ -32,4 +32,10 @@ public class GoogleCalendarAuth implements GoogleCalendareService {
         credentialsValue.add("userId", userId);
         return googleCalendarEndpoint.saveUserGoogleCalendarConnectionCredential(credentialsValue);
     }
+
+    @Override
+    public Boolean isGoogleCalendarConnected(Integer userId) {
+        return googleCalendarEndpoint.isGoogleCalendarConnected(userId);
+    }
+
 }

@@ -66,6 +66,8 @@ public class EventsView extends VerticalLayout {
        userTimeZone=String.valueOf(timeZone);
        noEventFoundSpan.getStyle().setAlignSelf(Style.AlignSelf.CENTER);
         initComp();
+
+
     }
 
     private void initComp() {
@@ -81,7 +83,18 @@ public class EventsView extends VerticalLayout {
         Button googleBtn = new Button("Connect Google Calender");
         googleBtn.setIcon(VaadinIcon.CALENDAR_BRIEFCASE.create());
         googleBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+        Boolean isConnectedG=false;
+        if(userId !=null){
+            log.info("User is not null !!");
+            isConnectedG= this.googleCalendarAuth.isGoogleCalendarConnected(userId);
+            googleBtn.setTooltipText("Google Calendar Already Connected");
+            log.info("Is connected value is : "+isConnectedG);
+        }else{
+            googleBtn.setTooltipText("");
+        }
 
+
+        googleBtn.setEnabled(!isConnectedG);
         datePickerLayout.add(startDatePicker,endDatePicker,btnSearch,googleBtn);
         datePickerLayout.setSizeFull();
         add(datePickerLayout, noEventFoundSpan);

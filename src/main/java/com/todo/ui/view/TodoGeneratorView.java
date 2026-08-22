@@ -81,7 +81,8 @@ public class TodoGeneratorView extends VerticalLayout {
         loadingBar = new ProgressBar();
         loadingBar.setIndeterminate(true);
         loadingBar.setValue(0);
-        loadingBar.addClassNames("loading-spinner", "hidden");
+        loadingBar.addClassNames("loading-spinner");
+        loadingBar.setVisible(false);
 
         promptField = new TextField();
         promptField.setPlaceholder("Message TodoAI...");
@@ -118,16 +119,19 @@ public class TodoGeneratorView extends VerticalLayout {
             if (val != null && !val.isBlank()) {
 
                 addUserChatBubble(val);
-                loadingBar.removeClassName("hidden");
+                loadingBar.setVisible(true);
                 promptField.setEnabled(false);
                 promptField.clear();
-                scrollToBottom();
+              //  scrollToBottom();
 
                 UI ui = UI.getCurrent();
                 log.info("Generating the todos ... ... ...");
                 log.info("UI is null :: {}",ui==null);
-                try{
-                    CompletableFuture.supplyAsync(() -> {
+
+               TodoDTO aiTodo = iAiGenerateTodoService.generateAiTodo(val);
+               renderAiResponse(aiTodo);
+               loadingBar.setVisible(false);
+                  /*  CompletableFuture.supplyAsync(() -> {
                         log.info("Start calling....");
                         return iAiGenerateTodoService.generateAiTodo(val);
                     }).thenAccept(todo -> {
@@ -151,11 +155,7 @@ public class TodoGeneratorView extends VerticalLayout {
                             promptField.setEnabled(true);
                         });
                         return null;
-                    });
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    });*/
             }
         });
     }
@@ -227,6 +227,7 @@ public class TodoGeneratorView extends VerticalLayout {
             HorizontalLayout row = new HorizontalLayout();
             row.addClassName("task-row");
             Checkbox cb = new Checkbox();
+            cb.setValue(true);
             Span ts = new Span(task);
             cb.addValueChangeListener(e -> {
                 ts.getStyle().set("text-decoration", e.getValue() ? "line-through" : "none");
