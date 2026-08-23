@@ -235,7 +235,18 @@ public class EventsView extends VerticalLayout {
         header.add(meetingTitleLayout);
         card.setHeader(header);
         card.add(timeAndStatusLayout);
+
+        card.getElement().addEventListener("click", event -> {
+            System.out.println("Card clicked");
+
+            openEventDetailsDialog();
+        });
         return card;
+    }
+
+    private void openEventDetailsDialog(){
+        EventDetailsDialog dialog = new EventDetailsDialog();
+        dialog.open();
     }
 
     private Icon createIcon(VaadinIcon vaadinIcon) {
@@ -243,4 +254,6 @@ public class EventsView extends VerticalLayout {
         icon.getStyle().set("padding", "var(--lumo-space-xs)");
         return icon;
     }
+
+
 }
