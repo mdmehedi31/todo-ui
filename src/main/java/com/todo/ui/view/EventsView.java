@@ -239,13 +239,13 @@ public class EventsView extends VerticalLayout {
         card.getElement().addEventListener("click", event -> {
             System.out.println("Card clicked");
 
-            openEventDetailsDialog();
+            openEventDetailsDialog(calendarEventDTO);
         });
         return card;
     }
 
-    private void openEventDetailsDialog(){
-        EventDetailsDialog dialog = new EventDetailsDialog();
+    private void openEventDetailsDialog(CalendarEventDTO  calendarEventDTO){
+        EventDetailsDialog dialog = new EventDetailsDialog(calendarEventDTO);
         dialog.open();
     }
 

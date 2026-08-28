@@ -2,6 +2,9 @@ package com.todo.ui.view;
 
 
 
+import com.todom.library.dto.AttendeeDTO;
+import com.todom.library.dto.CalendarEventDTO;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.details.Details;
@@ -12,13 +15,23 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.util.StreamUtils;
+
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class EventDetailsDialog extends Dialog {
 
-    public EventDetailsDialog() {
-        this.setWidth("750px");
-        this.setMaxWidth("90vw");
+    private CalendarEventDTO calendarEventDTO;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM d, yyyy", Locale.ENGLISH);
+    public EventDetailsDialog(CalendarEventDTO calendarEventDTO) {
+
+        this.calendarEventDTO = calendarEventDTO;
+
+        /*this.setWidth("750px");
+        this.setMaxWidth("90vw");*/
         this.setCloseOnEsc(true);
         this.setCloseOnOutsideClick(true);
 
@@ -30,12 +43,12 @@ public class EventDetailsDialog extends Dialog {
                 createHeaderSection(),
                 new Hr(),
                 createDateTimeSection(),
-                createMeetingLinkSection(),
+              //  createMeetingLinkSection(),
                 createDescriptionSection(),
                 createOrganizerSection(),
                 createAttendeesSection(),
-                createMetadataSection(),
-                new Hr(),
+                //createMetadataSection(),
+              //  new Hr(),
                 createFooterActions()
         );
 
@@ -43,7 +56,11 @@ public class EventDetailsDialog extends Dialog {
     }
 
     private HorizontalLayout createHeaderSection() {
-        H2 title = new H2("New Job Meeting");
+        H2 title = new H2("Untitled Event");
+
+        if(calendarEventDTO!=null && calendarEventDTO.getSummary() != null)
+            title.setText(calendarEventDTO.getSummary());
+
         title.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Margin.NONE);
 
         Span statusBadge = new Span("Scheduled");
@@ -61,18 +78,38 @@ public class EventDetailsDialog extends Dialog {
     }
 
     private VerticalLayout createDateTimeSection() {
-        Span date = new Span(new Icon(VaadinIcon.CALENDAR), new Span(" Wednesday, Oct 22, 2025"));
-        Span time = new Span(new Icon(VaadinIcon.CLOCK), new Span(" 08:56 AM - 09:56 AM (1 hr duration)"));
-        Span timezone = new Span(new Icon(VaadinIcon.GLOBE), new Span(" Asia/Dhaka"));
 
-        VerticalLayout dateTimeLayout = new VerticalLayout(date, time, timezone);
+        String fromDateValue ="Not Specified";
+        String toDateValue ="Not Specified";
+
+        if(calendarEventDTO!=null && calendarEventDTO.getStartDate() != null)
+            fromDateValue = calendarEventDTO.getStartDate().format(formatter);
+
+        if(calendarEventDTO!=null && calendarEventDTO.getEnd() != null)
+            toDateValue = calendarEventDTO.getEnd().format(formatter);
+
+        Span from = new Span();
+        from.add(new Html(" From :  <div><b>"+fromDateValue+"</div>"));
+        Span to = new Span();
+        to.add(new Html(" To :  <div><b>"+toDateValue+"</div>"));
+        Span date = new Span(new Icon(VaadinIcon.CALENDAR), from,new Span(" - "), to);
+        date.getStyle().setDisplay(Style.Display.FLEX);
+      //  Span time = new Span(new Icon(VaadinIcon.CLOCK), new Span(" 08:56 AM - 09:56 AM (1 hr duration)"));
+
+        String timeZone =" Not Specified";
+        if (calendarEventDTO !=null && calendarEventDTO.getTimeZone() != null)
+            timeZone=" "+calendarEventDTO.getTimeZone();
+
+        Span timezone = new Span(new Icon(VaadinIcon.GLOBE), new Span(timeZone));
+
+        VerticalLayout dateTimeLayout = new VerticalLayout(date, timezone);
         dateTimeLayout.setSpacing(false);
         dateTimeLayout.setPadding(false);
         dateTimeLayout.addClassNames(LumoUtility.TextColor.SECONDARY);
         return dateTimeLayout;
     }
 
-    private VerticalLayout createMeetingLinkSection() {
+   /* private VerticalLayout createMeetingLinkSection() {
         Div card = new Div();
         card.addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Padding.MEDIUM, LumoUtility.BorderRadius.MEDIUM);
         card.setWidthFull();
@@ -96,18 +133,24 @@ public class EventDetailsDialog extends Dialog {
         card.add(layout);
 
         return new VerticalLayout(card);
-    }
+    }*/
 
     private VerticalLayout createDescriptionSection() {
         H4 title = new H4("Description");
         title.addClassNames(LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Margin.Top.MEDIUM);
 
         Div content = new Div();
-        content.setText("This meeting will be held for taking job interview of the new client.");
+        String description = null;
+
+        if(calendarEventDTO!=null && calendarEventDTO.getDescription() != null)
+            description = calendarEventDTO.getDescription();
+
+         content.add(new Html("<div>"+description+"</div>"));
         content.addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Padding.MEDIUM, LumoUtility.BorderRadius.MEDIUM);
         content.setWidthFull();
 
         VerticalLayout layout = new VerticalLayout(title, content);
+        layout.setVisible(description!=null);
         layout.setPadding(false);
         layout.setSpacing(false);
         return layout;
@@ -117,9 +160,28 @@ public class EventDetailsDialog extends Dialog {
         H4 title = new H4("Organizer");
         title.addClassNames(LumoUtility.Margin.Bottom.XSMALL);
 
-        Span avatar = new Span("👤"); // Can be replaced with an actual image/Avatar component
-        Span name = new Span("Md Mehedi Hasan");
-        Anchor email = new Anchor("mailto:mdmehedihasan.mh31@gmail.com", "mdmehedihasan.mh31@gmail.com");
+        Icon icon= VaadinIcon.MALE.create();
+        Span avatar = new Span();
+        avatar.add(icon);
+
+        Span name = new Span("");
+
+        String organizer = null;
+        if(calendarEventDTO!=null && calendarEventDTO.getOrganizer() != null) {
+            organizer = calendarEventDTO.getOrganizer();
+            if (organizer.contains("@")){
+                String organizerName = organizer;
+                name.setText(organizerName.split("@")[0]);
+            }else {
+                name.setText(organizer);
+            }
+        }
+
+
+        Anchor email = new Anchor();
+        if (organizer != null) {
+            email.setHref("mailto:" + organizer);
+        }
         email.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
 
         VerticalLayout contactDetails = new VerticalLayout(name, email);
@@ -135,38 +197,53 @@ public class EventDetailsDialog extends Dialog {
     }
 
     private VerticalLayout createAttendeesSection() {
-        H4 title = new H4("Attendees (3)");
+
+        Integer attendeeSize = calendarEventDTO.getAttendees()!=null?calendarEventDTO.getAttendees().size():0;
+        H4 title = new H4("Attendees ("+attendeeSize+")");
         title.addClassNames(LumoUtility.Margin.Bottom.XSMALL);
 
         VerticalLayout attendeeList = new VerticalLayout();
         attendeeList.setPadding(false);
         attendeeList.setSpacing(false);
 
+        if(calendarEventDTO !=null && calendarEventDTO.getAttendees()!=null) {
+            for (AttendeeDTO attendeeDTO : calendarEventDTO.getAttendees()){
+                String badgeValue="badge success";
+                if(!attendeeDTO.getResponseStatus().equalsIgnoreCase("accepted"))
+                    badgeValue="badge";
+
+                attendeeList.add(createAttendeeRow(attendeeDTO.getEmail(), attendeeDTO.getResponseStatus(),badgeValue));
+            }
+        }
         // Example Attendee 1
-        attendeeList.add(createAttendeeRow("hasanmehedi2271@gmail.com", "Pending", "badge"));
+        /*attendeeList.add(createAttendeeRow("hasanmehedi2271@gmail.com", "Pending", "badge"));
         // Example Attendee 2
         attendeeList.add(createAttendeeRow("mehedichowdhury31@gmail.com", "Accepted", "badge success"));
-
+*/
         VerticalLayout layout = new VerticalLayout(title, attendeeList);
+        layout.setVisible(attendeeSize>0);
         layout.setPadding(false);
         return layout;
     }
 
     private HorizontalLayout createAttendeeRow(String email, String status, String badgeTheme) {
-        Span avatar = new Span("👤");
+
+        Icon humanIcon = VaadinIcon.MALE.create();
+        Span avatar = new Span();
+        avatar.add(humanIcon);
         Span emailSpan = new Span(email);
         Span statusBadge = new Span(status);
         statusBadge.getElement().getThemeList().add(badgeTheme);
 
         HorizontalLayout row = new HorizontalLayout(avatar, emailSpan, statusBadge);
-        row.setWidthFull();
-        row.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        row.setAlignItems(FlexComponent.Alignment.CENTER);
+       // row.setWidthFull();
+       // row.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        //row.setAlignItems(FlexComponent.Alignment.CENTER);
         row.addClassNames(LumoUtility.Padding.Vertical.XSMALL);
         return row;
     }
 
-    private Details createMetadataSection() {
+   /* private Details createMetadataSection() {
         VerticalLayout metaData = new VerticalLayout();
         metaData.setPadding(false);
         metaData.setSpacing(false);
@@ -178,19 +255,19 @@ public class EventDetailsDialog extends Dialog {
 
         Details details = new Details("Event Information", metaData);
         return details;
-    }
+    }*/
 
     private HorizontalLayout createFooterActions() {
-        Button editBtn = new Button("Edit Event");
+       /* Button editBtn = new Button("Edit Event");
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button deleteBtn = new Button("Delete Event");
-        deleteBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        deleteBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);*/
 
         Button closeBtn = new Button("Close", e -> this.close());
         closeBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        HorizontalLayout footer = new HorizontalLayout(editBtn, deleteBtn, closeBtn);
+        HorizontalLayout footer = new HorizontalLayout(/*editBtn, deleteBtn, */closeBtn);
         footer.setWidthFull();
         footer.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
