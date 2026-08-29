@@ -30,14 +30,19 @@ public class EventDetailsDialog extends Dialog {
 
         this.calendarEventDTO = calendarEventDTO;
 
-        /*this.setWidth("750px");
-        this.setMaxWidth("90vw");*/
-        this.setCloseOnEsc(true);
-        this.setCloseOnOutsideClick(true);
+        this.setWidth("500px");
+        this.setMaxWidth("90vw");
+        this.setCloseOnEsc(false);
+        this.setCloseOnOutsideClick(false);
 
         VerticalLayout layout = new VerticalLayout();
         layout.setPadding(false);
-        layout.setSpacing(true);
+        layout.setSpacing(false);
+       // layout.getStyle().setWidth("50%");
+        layout.getStyle().setMarginLeft("-17px");
+        layout.getStyle().setMarginTop("-20px");
+        layout.getStyle().setMarginBottom("-20px");
+        layout.getStyle().setMarginRight("-17px");
 
         layout.add(
                 createHeaderSection(),
@@ -57,7 +62,7 @@ public class EventDetailsDialog extends Dialog {
 
     private HorizontalLayout createHeaderSection() {
         H2 title = new H2("Untitled Event");
-
+        title.getStyle().setPaddingRight("10px");
         if(calendarEventDTO!=null && calendarEventDTO.getSummary() != null)
             title.setText(calendarEventDTO.getSummary());
 
@@ -66,11 +71,12 @@ public class EventDetailsDialog extends Dialog {
         Span statusBadge = new Span("Scheduled");
         statusBadge.getElement().getThemeList().add("badge success");
 
-        Button closeButton = new Button(new Icon(VaadinIcon.CLOSE_SMALL), e -> this.close());
-        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+      /*  Button closeButton = new Button(new Icon(VaadinIcon.CLOSE_SMALL), e -> this.close());
+        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);*/
 
-        HorizontalLayout header = new HorizontalLayout(title, statusBadge, closeButton);
-        header.setWidthFull();
+        HorizontalLayout header = new HorizontalLayout(title, statusBadge/*, closeButton*/);
+      //  header.setWidthFull();
+        header.setSpacing(false);
         header.setAlignItems(FlexComponent.Alignment.CENTER);
         header.expand(title);
 
@@ -79,8 +85,8 @@ public class EventDetailsDialog extends Dialog {
 
     private VerticalLayout createDateTimeSection() {
 
-        String fromDateValue ="Not Specified";
-        String toDateValue ="Not Specified";
+        String fromDateValue =null;
+        String toDateValue =null;
 
         if(calendarEventDTO!=null && calendarEventDTO.getStartDate() != null)
             fromDateValue = calendarEventDTO.getStartDate().format(formatter);
@@ -89,10 +95,25 @@ public class EventDetailsDialog extends Dialog {
             toDateValue = calendarEventDTO.getEnd().format(formatter);
 
         Span from = new Span();
-        from.add(new Html(" From :  <div><b>"+fromDateValue+"</div>"));
+        from.getStyle().setPaddingLeft("5px");
+        from.getStyle().setPaddingRight("5px");
+       // from.add(new Html(" From :  <div><b>"+fromDateValue+"</div>"));
         Span to = new Span();
-        to.add(new Html(" To :  <div><b>"+toDateValue+"</div>"));
-        Span date = new Span(new Icon(VaadinIcon.CALENDAR), from,new Span(" - "), to);
+        to.getStyle().setPaddingLeft("5px");
+        //to.add(new Html(" To :  <div><b>"+toDateValue+"</div>"));
+        from.add(new Html("From : <div><b>" + fromDateValue + "</b></div>"));
+        to.add(new Html("To : <div><b>" + toDateValue + "</b></div>"));
+
+        Span duration = new Span();
+        duration.getStyle().setDisplay(Style.Display.FLEX);
+        if(fromDateValue == null && toDateValue == null){
+            duration.getStyle().setPaddingLeft("5px");
+            duration.setText("Not Specified");
+        }
+        else {
+            duration.add(from, new Span(" - "),to);
+        }
+        Span date = new Span(new Icon(VaadinIcon.CALENDAR), duration);
         date.getStyle().setDisplay(Style.Display.FLEX);
       //  Span time = new Span(new Icon(VaadinIcon.CLOCK), new Span(" 08:56 AM - 09:56 AM (1 hr duration)"));
 
@@ -142,6 +163,8 @@ public class EventDetailsDialog extends Dialog {
         Div content = new Div();
         String description = null;
 
+        content.getStyle().setWidth("456px");
+        content.getStyle().set("overflow-wrap","break-word");
         if(calendarEventDTO!=null && calendarEventDTO.getDescription() != null)
             description = calendarEventDTO.getDescription();
 
@@ -153,6 +176,7 @@ public class EventDetailsDialog extends Dialog {
         layout.setVisible(description!=null);
         layout.setPadding(false);
         layout.setSpacing(false);
+        layout.setWidthFull();
         return layout;
     }
 
@@ -177,11 +201,12 @@ public class EventDetailsDialog extends Dialog {
             }
         }
 
-
         Anchor email = new Anchor();
         if (organizer != null) {
             email.setHref("mailto:" + organizer);
+            email.setText(organizer);
         }
+
         email.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
 
         VerticalLayout contactDetails = new VerticalLayout(name, email);
@@ -192,6 +217,8 @@ public class EventDetailsDialog extends Dialog {
         organizerRow.setAlignItems(FlexComponent.Alignment.CENTER);
 
         VerticalLayout layout = new VerticalLayout(title, organizerRow);
+        layout.setSpacing(false);
+        layout.getStyle().setPaddingTop("10px");
         layout.setPadding(false);
         return layout;
     }
@@ -257,7 +284,7 @@ public class EventDetailsDialog extends Dialog {
         return details;
     }*/
 
-    private HorizontalLayout createFooterActions() {
+    private Button createFooterActions() {
        /* Button editBtn = new Button("Edit Event");
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -265,12 +292,12 @@ public class EventDetailsDialog extends Dialog {
         deleteBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);*/
 
         Button closeBtn = new Button("Close", e -> this.close());
-        closeBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
+        closeBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_ERROR);
+        closeBtn.getStyle().setAlignSelf(Style.AlignSelf.CENTER);
         HorizontalLayout footer = new HorizontalLayout(/*editBtn, deleteBtn, */closeBtn);
         footer.setWidthFull();
         footer.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
-        return footer;
+        return closeBtn;
     }
 }
